@@ -133,6 +133,7 @@ html:has(.dd-editor[open]){overflow:hidden}
 .dd-editor footer{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 24px 20px;border-top:1px solid var(--_line)}
 .dd-editor button{font:inherit;font-size:14px;border-radius:999px;padding:9px 18px;cursor:pointer;border:1px solid var(--_line);background:transparent;color:var(--_fg)}
 .dd-editor button[value=done]{background:var(--_accent);border-color:var(--_accent);color:var(--_bg);font-weight:600}
+@media (max-height:480px){.dd-editor{max-height:calc(100dvh - 16px)}.dd-editor header{padding:14px 20px 6px}.dd-editor header p{display:none}.dd-editor label{padding:6px 12px}.dd-editor footer{padding:10px 20px 12px}}
 `;
 
   function openEditor() {
