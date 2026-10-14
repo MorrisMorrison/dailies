@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dailies · Field Notes</title>
+<meta name="theme-color" content="#ece4d2">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400;1,9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f0e2; --desk: #e4dac4; --ink: #2a2824; --muted: #7c7466; --rust: #c0552c; --rule: rgba(66, 104, 140, .16);
+    --dd-bg: #f6f0e2; --dd-fg: #2a2824; --dd-muted: #7c7466; --dd-accent: #c0552c; --dd-line: rgba(42,40,36,.1);
+    --dd-font: 'Fraunces', Georgia, serif; --dd-radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100dvh; color: var(--ink); font-family: 'Fraunces', Georgia, serif;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3CfeColorMatrix values='0 0 0 0 .35  0 0 0 0 .3  0 0 0 0 .22  0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      var(--desk);
+    padding: clamp(16px, 5vh, 56px) 16px 48px;
+  }
+  .sheet {
+    position: relative; max-width: 520px; margin: 0 auto; padding: 34px 26px 30px 48px;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .4  0 0 0 0 .34  0 0 0 0 .25  0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      var(--paper);
+    box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 18px 40px -18px rgba(60,40,10,.35), 0 2px 6px rgba(60,40,10,.08);
+    border-radius: 3px;
+  }
+  .sheet::before { /* margin line */
+    content: ''; position: absolute; top: 0; bottom: 0; left: 30px; width: 1.5px; background: rgba(192, 85, 44, .35);
+  }
+
+  header { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .no { font-family: 'Caveat', cursive; font-size: 20px; color: var(--muted); }
+  .date { font-family: 'Caveat', cursive; font-size: 24px; color: var(--rust); transform: rotate(-2deg); }
+  h1 { margin: 10px 0 2px; font-weight: 400; font-style: italic; font-size: clamp(40px, 11vw, 56px); letter-spacing: -.02em; line-height: 1; }
+  h1 b { font-style: normal; font-weight: 600; }
+  .lede { margin: 0 0 18px; color: var(--muted); font-size: 15px; font-style: italic; }
+
+  ol { list-style: none; margin: 0; padding: 0; }
+  li { border-top: 1.5px solid var(--rule); }
+  li:last-child { border-bottom: 1.5px solid var(--rule); }
+  .row {
+    appearance: none; border: 0; background: none; color: inherit; font: inherit; text-align: left; cursor: pointer; width: 100%;
+    display: grid; grid-template-columns: 34px 34px 1fr; gap: 14px; align-items: center; padding: 14px 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .row:focus-visible { outline: 2px dashed var(--rust); outline-offset: 2px; }
+  .box { width: 30px; height: 30px; overflow: visible; }
+  .box .frame { fill: none; stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; opacity: .75; }
+  .box .tick {
+    fill: none; stroke: var(--rust); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
+    stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .45s cubic-bezier(.5,0,.2,1);
+  }
+  .row .dd-icon { width: 32px; height: 32px; color: var(--ink); filter: url(#ink); opacity: .85; }
+  .row .dd-icon g { stroke-width: 2.2; }
+  .txt { min-width: 0; }
+  .name {
+    display: inline; font-size: 21px; font-weight: 600; letter-spacing: -.01em;
+    background: linear-gradient(var(--rust), var(--rust)) no-repeat 0 58% / 0% 2px;
+    transition: background-size .45s cubic-bezier(.5,0,.2,1) .1s, color .3s;
+  }
+  .hint { display: block; margin-top: 2px; font-size: 14px; font-style: italic; color: var(--muted); }
+  .row[aria-pressed="true"] .tick { stroke-dashoffset: 0; }
+  .row[aria-pressed="true"] .name { background-size: 100% 2px; color: #6d655a; }
+  .row[aria-pressed="true"] .dd-icon { opacity: .45; }
+
+  .tally { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 22px; min-height: 56px; }
+  .tally svg { height: 48px; overflow: visible; }
+  .tally svg path { fill: none; stroke: var(--rust); stroke-width: 2.6; stroke-linecap: round; }
+  .count { font-family: 'Caveat', cursive; font-size: 26px; color: var(--ink); white-space: nowrap; }
+  .foot { display: flex; justify-content: space-between; margin-top: 18px; font-family: 'Caveat', cursive; font-size: 20px; color: var(--muted); }
+  .foot button { all: unset; cursor: pointer; color: var(--ink); }
+  .foot button:hover { color: var(--rust); }
+  .foot button:focus-visible { outline: 2px dashed var(--rust); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="ink"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="5"/><feDisplacementMap in="SourceGraphic" scale="1.6"/></filter>
+</svg>
+
+<article class="sheet">
+  <header><span class="no" id="no"></span><span class="date" id="date"></span></header>
+  <h1>do your <b>dailies</b></h1>
+  <p class="lede">Small things, done most days.</p>
+  <ol id="list"></ol>
+  <div class="tally"><svg id="tally" aria-hidden="true"></svg><span class="count" id="count" aria-live="polite"></span></div>
+  <div class="foot"><span>resets at midnight</span><button type="button" id="edit">edit the list →</button></div>
+</article>
+
+<script src="../core.js"></script>
+<script>
+  const list = document.getElementById('list');
+  // Slightly wobbly hand-drawn box; the tick is drawn on with dashoffset.
+  const BOX = '<svg class="box" viewBox="0 0 30 30"><path class="frame" d="M4 4.5c7-.6 15-.4 22.2-.2.4 7 .5 14.4.1 21.6-7.2.5-15 .3-22.1.1-.5-7-.4-14.6-.2-21.5z"/><path class="tick" pathLength="1" d="M6.5 15.5c2.5 2 4.6 4.6 6 7.2C16 15 21 8 28 2.5"/></svg>';
+
+  function render() {
+    list.innerHTML = Dailies.list.map((d) => `
+      <li><button class="row" type="button" data-id="${d.id}" aria-pressed="${Dailies.isDone(d.id)}">
+        ${BOX}${Dailies.icon(d.id)}
+        <span class="txt"><span class="name">${d.label}</span><span class="hint">${d.hint}</span></span>
+      </button></li>`).join('');
+    paint();
+  }
+
+  // Tally marks: four uprights and a slash per group of five, each stroke a little off.
+  function tally(n) {
+    let d = '', x = 0;
+    for (let i = 0; i < n; i++) {
+      const g = i % 5, wob = ((i * 37) % 7) / 7 - 0.5;
+      if (g < 4) d += `M${x + g * 9 + wob} ${6 + wob}l${wob * 1.6} 34`;
+      else { d += `M${x - 4} ${34 + wob}L${x + 32} ${10 - wob}`; x += 52; }
+    }
+    const w = Math.max(1, x + ((n % 5) ? (n % 5) * 9 + 6 : 0));
+    return `<svg viewBox="0 0 ${w} 46" style="width:${w}px"><path d="${d}"/></svg>`;
+  }
+
+  function paint() {
+    const { done, total } = Dailies.progress;
+    list.querySelectorAll('.row').forEach((r) => r.setAttribute('aria-pressed', Dailies.isDone(r.dataset.id)));
+    document.getElementById('tally').outerHTML = tally(done).replace('<svg', '<svg id="tally" aria-hidden="true"');
+    document.getElementById('count').textContent = done === total ? `all ${total}. well done.` : `${done} of ${total}`;
+  }
+
+  list.addEventListener('click', (e) => { const r = e.target.closest('.row'); if (r) Dailies.toggle(r.dataset.id); });
+  document.getElementById('edit').addEventListener('click', Dailies.openEditor);
+
+  const now = new Date();
+  const dayOfYear = Math.round((now - new Date(now.getFullYear(), 0, 1)) / 864e5) + 1;
+  document.getElementById('no').textContent = `No. ${dayOfYear}`;
+  document.getElementById('date').textContent = Dailies.date({ weekday: 'long', day: 'numeric', month: 'long' });
+
+  let shown = Dailies.list.map((d) => d.id).join();
+  Dailies.onChange(() => {
+    const ids = Dailies.list.map((d) => d.id).join();
+    ids === shown ? paint() : ((shown = ids), render());
+  });
+  render();
+</script>
+</body>
+</html>

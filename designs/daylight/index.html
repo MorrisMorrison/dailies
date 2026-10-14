@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dailies · Daylight</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* set per time of day by the script below */
+    --s1: #1e63b8; --s2: #3f8fe0; --s3: #8cc4f0; --deep: #18467f; --glow: #fff3c4;
+    --dd-bg: #ffffff; --dd-fg: #14213a; --dd-muted: #5d6a80; --dd-accent: var(--deep); --dd-line: rgba(20,33,58,.08);
+    --dd-font: 'Manrope', system-ui, sans-serif; --dd-radius: 24px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100dvh; color: #fff; font-family: 'Manrope', system-ui, sans-serif; -webkit-font-smoothing: antialiased;
+    background: linear-gradient(180deg, var(--s1) 0%, var(--s2) 48%, var(--s3) 100%) fixed;
+    transition: background 1s;
+  }
+  main { max-width: 520px; margin: 0 auto; padding: max(28px, env(safe-area-inset-top)) 16px 40px; }
+
+  .top { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 600; opacity: .9; }
+  .top button {
+    font: inherit; color: inherit; cursor: pointer; border: 1px solid rgba(255,255,255,.45);
+    background: rgba(255,255,255,.12); border-radius: 999px; padding: 7px 14px; backdrop-filter: blur(8px);
+  }
+  .top button:focus-visible, .card:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+  h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; letter-spacing: -.03em; line-height: 1.05; }
+
+  .arc { position: relative; margin: 18px auto 6px; width: min(100%, 380px); }
+  .arc svg { display: block; width: 100%; overflow: visible; }
+  .track { fill: none; stroke: rgba(255,255,255,.35); stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
+  .trail { fill: none; stroke: #fff; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1); }
+  .horizon { stroke: rgba(255,255,255,.5); stroke-width: 1.5; }
+  .sun { transition: transform 1s cubic-bezier(.4,0,.2,1); }
+  .sun circle:first-child { fill: var(--glow); opacity: .35; }
+  .sun circle:last-child { fill: var(--glow); }
+  .count { position: absolute; left: 0; right: 0; bottom: 6px; text-align: center; }
+  .count b { display: block; font-size: 52px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+  .count span { font-size: 14px; font-weight: 600; opacity: .85; }
+
+  .cards { list-style: none; margin: 18px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .card {
+    appearance: none; font: inherit; color: inherit; text-align: left; cursor: pointer; width: 100%; height: 100%;
+    position: relative; display: flex; flex-direction: column; gap: 10px; padding: 16px 16px 18px;
+    border-radius: 22px; border: 1px solid rgba(255,255,255,.28);
+    background: rgba(8, 20, 48, .16); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    transition: background .35s, color .35s, transform .2s, box-shadow .35s; -webkit-tap-highlight-color: transparent;
+  }
+  .card:active { transform: scale(.97); }
+  .card .dd-icon { width: 34px; height: 34px; }
+  .card .dd-icon g { stroke-width: 2.4; }
+  .card strong { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+  .card small { font-size: 13px; line-height: 1.35; opacity: .8; margin-top: -6px; }
+  .check {
+    position: absolute; top: 14px; right: 14px; width: 24px; height: 24px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.6); display: grid; place-items: center; transition: all .3s;
+  }
+  .check svg { width: 14px; height: 14px; opacity: 0; transform: scale(.4); transition: all .3s cubic-bezier(.3,1.6,.5,1); }
+  .card[aria-pressed="true"] { background: #fff; color: var(--deep); border-color: #fff; box-shadow: 0 12px 30px -12px rgba(0,20,60,.45); }
+  .card[aria-pressed="true"] .check { background: var(--deep); border-color: var(--deep); }
+  .card[aria-pressed="true"] .check svg { opacity: 1; transform: none; }
+
+  .note { margin: 22px 0 0; text-align: center; font-size: 13px; font-weight: 500; opacity: .75; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="top"><span id="date"></span><button type="button" id="edit">Edit</button></div>
+  <h1 id="greet"></h1>
+
+  <div class="arc" aria-hidden="true">
+    <svg viewBox="0 0 320 180">
+      <line class="horizon" x1="0" y1="170" x2="320" y2="170"/>
+      <path class="track" d="M20 170A140 140 0 0 1 300 170"/>
+      <path class="trail" id="trail" pathLength="1" d="M20 170A140 140 0 0 1 300 170"/>
+      <g class="sun" id="sun"><circle r="22"/><circle r="11"/></g>
+    </svg>
+    <div class="count"><b id="num"></b><span id="of"></span></div>
+  </div>
+
+  <ul class="cards" id="cards"></ul>
+  <p class="note">Your day resets at midnight. Nothing leaves this device.</p>
+</main>
+
+<script src="../core.js"></script>
+<script>
+  // Sky follows the clock. ?phase=dawn|day|dusk|night previews a specific one.
+  const PHASES = {
+    night: { s: ['#0b1130', '#1d2757', '#3a3f78'], deep: '#1d2757', glow: '#e8ecff' },
+    dawn: { s: ['#3a4a8c', '#b9779a', '#f3b48a'], deep: '#5a4a86', glow: '#ffe2b0' },
+    day: { s: ['#1e63b8', '#3f8fe0', '#8cc4f0'], deep: '#18467f', glow: '#fff3c4' },
+    dusk: { s: ['#272a62', '#93507c', '#ee8c5e'], deep: '#3a2f6a', glow: '#ffd2a1' },
+  };
+  function phaseFor(h) { return h < 5 || h >= 21 ? 'night' : h < 9 ? 'dawn' : h < 17 ? 'day' : 'dusk'; }
+  function greetFor(h) { return h < 5 ? 'Still up?' : h < 12 ? 'Good morning.' : h < 17 ? 'Good afternoon.' : h < 21 ? 'Good evening.' : 'Good night.'; }
+
+  function applySky() {
+    const h = new Date().getHours();
+    const forced = new URLSearchParams(location.search).get('phase');
+    const p = PHASES[forced] || PHASES[phaseFor(h)];
+    const root = document.documentElement.style;
+    p.s.forEach((c, i) => root.setProperty(`--s${i + 1}`, c));
+    root.setProperty('--deep', p.deep);
+    root.setProperty('--glow', p.glow);
+    document.querySelector('meta[name=theme-color]')?.remove();
+    document.head.insertAdjacentHTML('beforeend', `<meta name="theme-color" content="${p.s[0]}">`);
+    document.getElementById('greet').textContent = greetFor(h);
+  }
+
+  const cards = document.getElementById('cards');
+  const TICK = '<svg viewBox="0 0 14 14"><path d="M2.5 7.5l3 3 6-7" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function render() {
+    cards.innerHTML = Dailies.list.map((d) => `
+      <li><button class="card" type="button" data-id="${d.id}" aria-pressed="${Dailies.isDone(d.id)}">
+        ${Dailies.icon(d.id)}<strong>${d.label}</strong><small>${d.hint}</small><span class="check">${TICK}</span>
+      </button></li>`).join('');
+    paint();
+  }
+
+  // The sun travels the arc as you complete things: sunrise at 0, sunset when you're done.
+  function paint() {
+    const { done, total, ratio } = Dailies.progress;
+    cards.querySelectorAll('.card').forEach((c) => c.setAttribute('aria-pressed', Dailies.isDone(c.dataset.id)));
+    const a = Math.PI * ratio;
+    document.getElementById('sun').style.transform = `translate(${160 - 140 * Math.cos(a)}px, ${170 - 140 * Math.sin(a)}px)`;
+    document.getElementById('trail').style.strokeDashoffset = 1 - ratio;
+    document.getElementById('num').textContent = `${done}/${total}`;
+    document.getElementById('of').textContent = done === total ? 'All done. Enjoy the evening.' : done ? 'dailies done' : 'Start anywhere';
+  }
+
+  cards.addEventListener('click', (e) => { const c = e.target.closest('.card'); if (c) Dailies.toggle(c.dataset.id); });
+  document.getElementById('edit').addEventListener('click', Dailies.openEditor);
+  document.getElementById('date').textContent = Dailies.date({ weekday: 'long', month: 'long', day: 'numeric' });
+
+  applySky();
+  setInterval(applySky, 60 * 1000);
+  let shown = Dailies.list.map((d) => d.id).join();
+  Dailies.onChange(() => {
+    const ids = Dailies.list.map((d) => d.id).join();
+    ids === shown ? paint() : ((shown = ids), render());
+  });
+  render();
+</script>
+</body>
+</html>

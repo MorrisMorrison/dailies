@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dailies · Canopy</title>
+<meta name="theme-color" content="#26384d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --p: 0; /* progress 0..1 — the sky clears as you go */
+    --chalk: #f1efe6;
+    --dd-bg: #1d2329; --dd-fg: #f1efe6; --dd-muted: #a3a9ad; --dd-accent: #f1efe6; --dd-line: rgba(255,255,255,.1);
+    --dd-font: 'Archivo', system-ui, sans-serif; --dd-radius: 6px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    background: #1b2127; color: var(--chalk);
+    font-family: 'Archivo', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+
+  /* ---------- scene ---------- */
+  .scene { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
+  .sky {
+    position: absolute; inset: -40px;
+    background:
+      radial-gradient(42% 24% at 72% 14%, rgba(222,226,230,.78), transparent 70%),
+      radial-gradient(34% 18% at 22% 30%, rgba(206,212,219,.62), transparent 70%),
+      radial-gradient(55% 20% at 58% 42%, rgba(196,203,212,.55), transparent 72%),
+      radial-gradient(30% 16% at 8% 10%, rgba(184,193,203,.45), transparent 70%),
+      radial-gradient(28% 14% at 92% 34%, rgba(190,198,208,.4), transparent 70%),
+      linear-gradient(180deg, #22344a 0%, #3c4f66 38%, #5b6979 66%, #2a2f34 100%);
+    filter: blur(10px) brightness(calc(.72 + var(--p) * .38)) saturate(calc(.75 + var(--p) * .5));
+    transition: filter 1.2s ease;
+  }
+  .sun {
+    position: absolute; left: 50%; top: 8%; width: 120vmax; height: 80vmax; translate: -50% -50%;
+    background: radial-gradient(closest-side, rgba(255,226,170,.55), rgba(255,200,140,.12) 45%, transparent 70%);
+    opacity: var(--p); transition: opacity 1.2s ease; mix-blend-mode: screen;
+  }
+  .trees { position: absolute; left: 0; right: 0; bottom: 0; width: 100%; height: 78vh; filter: blur(1.2px); }
+  .grain {
+    position: absolute; inset: 0; opacity: .32; mix-blend-mode: overlay; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .vignette { position: absolute; inset: 0; background: radial-gradient(120% 90% at 50% 40%, transparent 50%, rgba(0,0,0,.45)); }
+
+  /* ---------- content ---------- */
+  main {
+    position: relative; z-index: 1; min-height: 100dvh;
+    display: flex; flex-direction: column; align-items: center;
+    padding: max(9vh, 48px) 16px 40px; text-align: center;
+  }
+  .kicker { font-weight: 800; font-size: clamp(17px, 4.4vw, 26px); letter-spacing: .1em; margin: 0; opacity: .92; }
+  h1 {
+    margin: .12em 0 0; font-weight: 900; line-height: .9;
+    font-size: clamp(62px, 19vw, 136px); letter-spacing: .07em; margin-right: -.07em;
+    background:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.6' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .55  0 0 0 0 .6  0 0 0 0 .65  0 0 0 -2.4 1.3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      var(--chalk);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 2px 24px rgba(0,0,0,.18);
+  }
+
+  .grid {
+    list-style: none; margin: clamp(36px, 8vh, 72px) 0 0; padding: 0;
+    width: min(560px, 100%);
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 6vh, 52px) 4px;
+  }
+  .daily {
+    appearance: none; border: 0; background: none; color: inherit; font: inherit; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%;
+    padding: 6px 0; -webkit-tap-highlight-color: transparent;
+  }
+  .glyph { position: relative; width: clamp(64px, 18vw, 86px); aspect-ratio: 1; display: grid; place-items: center; }
+  .glyph .dd-icon {
+    width: 82%; height: 82%; filter: url(#chalk); opacity: .58;
+    transition: opacity .35s ease, transform .35s cubic-bezier(.3,1.6,.5,1), filter .35s ease;
+  }
+  .glyph .dd-icon g { stroke-width: 2.4; }
+  .ring { position: absolute; inset: -14%; width: 128%; height: 128%; overflow: visible; filter: url(#chalk); }
+  .ring path {
+    fill: none; stroke: var(--chalk); stroke-width: 2.2; stroke-linecap: round;
+    stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset .7s cubic-bezier(.6,.1,.2,1);
+  }
+  .label { font-weight: 800; font-size: clamp(12px, 3.3vw, 15px); letter-spacing: .14em; text-transform: uppercase; opacity: .7; transition: opacity .3s; }
+  .daily:hover .dd-icon { opacity: .8; }
+  .daily[aria-pressed="true"] .dd-icon { opacity: 1; transform: scale(1.06) rotate(-3deg); filter: url(#chalk) drop-shadow(0 0 10px rgba(255,236,200,.55)); }
+  .daily[aria-pressed="true"] .ring path { stroke-dashoffset: 0; }
+  .daily[aria-pressed="true"] .label { opacity: 1; }
+  .daily:focus-visible { outline: 2px dashed var(--chalk); outline-offset: 6px; border-radius: 8px; }
+
+  footer { margin-top: auto; padding-top: 56px; display: grid; gap: 14px; justify-items: center; }
+  .status { margin: 0; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; font-size: 13px; }
+  .meta { display: flex; gap: 18px; align-items: center; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; opacity: .65; }
+  .meta button { all: unset; cursor: pointer; border-bottom: 1px solid currentColor; }
+  .meta button:focus-visible { outline: 2px dashed var(--chalk); outline-offset: 4px; }
+
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="chalk" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="3" result="warp"/>
+    <feDisplacementMap in="SourceGraphic" in2="warp" scale="2.6" xChannelSelector="R" yChannelSelector="G" result="rough"/>
+    <feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed="9" result="grain"/>
+    <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.2 1.75" result="holes"/>
+    <feComposite in="rough" in2="holes" operator="in"/>
+  </filter>
+</svg>
+
+<div class="scene" aria-hidden="true">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <svg class="trees" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMax slice"></svg>
+  <div class="vignette"></div>
+  <div class="grain"></div>
+</div>
+
+<main>
+  <p class="kicker">DO YOUR</p>
+  <h1>DAILIES</h1>
+  <ul class="grid" id="grid"></ul>
+  <footer>
+    <p class="status" id="status" aria-live="polite"></p>
+    <div class="meta"><span id="date"></span><button type="button" id="edit">Edit dailies</button></div>
+  </footer>
+</main>
+
+<script src="../core.js"></script>
+<script>
+  // Pine silhouettes, generated once with a fixed seed so the skyline never jumps.
+  (function trees() {
+    let seed = 11;
+    const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    function pine(x, base, h, w) {
+      const top = base - h, tiers = 10, right = [], left = [];
+      for (let t = 1; t <= tiers; t++) {
+        const y = top + h * 0.86 * (t / tiers);
+        const k = Math.pow(t / tiers, 0.75);
+        const r = (w / 2) * k * (0.75 + rnd() * 0.5), l = (w / 2) * k * (0.75 + rnd() * 0.5);
+        right.push([x + r, y + rnd() * 6], [x + r * 0.35, y + h * 0.018]);
+        left.push([x - l, y + rnd() * 6], [x - l * 0.35, y + h * 0.018]);
+      }
+      const tw = Math.max(4, w * 0.035);
+      const pts = [[x, top], ...right, [x + tw, base], [x - tw, base], ...left.reverse()];
+      return 'M' + pts.map(([a, b]) => a.toFixed(1) + ' ' + b.toFixed(1)).join('L') + 'Z';
+    }
+    const layers = [
+      { n: 12, fill: '#2b343b', h: [240, 380], base: 600 },
+      { n: 8, fill: '#151a19', h: [380, 600], base: 620 },
+    ];
+    let out = '';
+    for (const L of layers) {
+      for (let i = 0; i < L.n; i++) {
+        const x = ((i + 0.2 + rnd() * 0.6) / L.n) * 1300 - 50;
+        const h = L.h[0] + rnd() * (L.h[1] - L.h[0]);
+        out += `<path fill="${L.fill}" d="${pine(x, L.base, h, h * (0.3 + rnd() * 0.12))}"/>`;
+      }
+    }
+    document.querySelector('.trees').innerHTML = out;
+  })();
+
+  const grid = document.getElementById('grid');
+  const status = document.getElementById('status');
+  const RING = 'M50 6C78 5 95 24 94 50 93 77 74 95 49 94 22 93 5 74 6 49 7 26 24 9 56 9';
+
+  function render() {
+    grid.innerHTML = Dailies.list.map((d) => `
+      <li><button class="daily" type="button" data-id="${d.id}" aria-pressed="${Dailies.isDone(d.id)}" title="${d.hint}">
+        <span class="glyph">${Dailies.icon(d.id)}<svg class="ring" viewBox="0 0 100 100"><path pathLength="1" d="${RING}"/></svg></span>
+        <span class="label">${d.label}</span>
+      </button></li>`).join('');
+    paint();
+  }
+
+  // Toggling only flips attributes so the chalk ring can animate in.
+  function paint() {
+    const { done, total, ratio } = Dailies.progress;
+    grid.querySelectorAll('.daily').forEach((b) => b.setAttribute('aria-pressed', Dailies.isDone(b.dataset.id)));
+    document.documentElement.style.setProperty('--p', ratio);
+    status.textContent = done === total ? 'All done. See you tomorrow.'
+      : done === 0 ? 'Fresh day. Start anywhere.'
+      : `${done} of ${total} done. Keep going.`;
+  }
+
+  grid.addEventListener('click', (e) => {
+    const b = e.target.closest('.daily');
+    if (b) Dailies.toggle(b.dataset.id);
+  });
+  document.getElementById('edit').addEventListener('click', Dailies.openEditor);
+  document.getElementById('date').textContent = Dailies.date({ weekday: 'long', month: 'short', day: 'numeric' });
+
+  let shown = '';
+  Dailies.onChange(() => {
+    const ids = Dailies.list.map((d) => d.id).join();
+    ids === shown ? paint() : ((shown = ids), render());
+  });
+  shown = Dailies.list.map((d) => d.id).join();
+  render();
+</script>
+</body>
+</html>
