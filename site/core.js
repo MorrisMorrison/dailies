@@ -117,14 +117,15 @@
   border:0;padding:0;border-radius:var(--dd-radius,18px);background:var(--_bg);color:var(--_fg);font-family:var(--dd-font,system-ui,sans-serif);
   width:min(440px,calc(100vw - 32px));max-height:min(720px,calc(100dvh - 48px));box-shadow:0 30px 80px rgba(0,0,0,.35)}
 .dd-editor[open]{display:flex;flex-direction:column}
-.dd-editor::backdrop{background:rgba(10,12,14,.55);backdrop-filter:blur(3px)}
+.dd-editor::backdrop{background:rgba(10,12,20,.6)}
+html:has(.dd-editor[open]){overflow:hidden}
 .dd-editor form{display:flex;flex-direction:column;flex:1;min-height:0;margin:0}
 .dd-editor header{padding:22px 24px 12px}
 .dd-editor h2{margin:0;font-size:21px;letter-spacing:-.01em}
 .dd-editor header p{margin:6px 0 0;color:var(--_muted);font-size:14px;line-height:1.4}
-.dd-editor ul{list-style:none;margin:0;padding:4px 10px;overflow:auto;flex:1;min-height:0}
+.dd-editor ul{list-style:none;margin:0;padding:4px 10px;overflow:auto;flex:1;min-height:0;overscroll-behavior:contain;contain:content}
 .dd-editor label{display:grid;grid-template-columns:20px 30px 1fr;gap:12px;align-items:center;padding:9px 12px;border-radius:12px;cursor:pointer}
-.dd-editor label:hover{background:var(--_line)}
+@media (hover:hover){.dd-editor label:hover{background:var(--_line)}}
 .dd-editor input{accent-color:var(--_accent);width:18px;height:18px;margin:0}
 .dd-editor .dd-icon{width:30px;height:30px}
 .dd-editor strong{display:block;font-size:15px}

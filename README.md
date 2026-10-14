@@ -10,17 +10,20 @@ The sun on the page is your progress: it rises with your first daily, reaches no
 
 ## Run it
 
-Open `index.html` in a browser. To get offline support (the service worker), serve the folder over http, for example with any static file server.
+Open `site/index.html` in a browser. To get offline support (the service worker), serve the `site/` folder over http, for example with any static file server.
+
+Every push to `main` publishes `site/` to GitHub Pages (`.github/workflows/pages.yml`).
 
 ## Layout
 
-| File | What it does |
+| Path | What it is |
 |---|---|
-| `index.html`, `style.css`, `app.js` | The site (the "Daylight" design) |
-| `core.js` | The list of dailies, their icons, on-device state and the editor dialog |
-| `sw.js`, `manifest.webmanifest`, `icon.svg` | Offline support and install-to-home-screen |
-| `fonts/` | Manrope, self-hosted (SIL Open Font License) |
-| `designs/` | The five early design prototypes and a gallery to compare them |
+| `site/` | The website, exactly as it is published |
+| `site/index.html`, `style.css`, `app.js` | The page (the "Daylight" design) |
+| `site/core.js` | The list of dailies, their icons, on-device state and the editor dialog |
+| `site/sw.js`, `manifest.webmanifest`, `icon.svg` | Offline support and install-to-home-screen |
+| `site/fonts/` | Manrope, self-hosted (SIL Open Font License) |
+| `designs/` | The five early design prototypes and a gallery to compare them (not published) |
 
 ## The dailies
 

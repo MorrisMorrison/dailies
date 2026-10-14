@@ -23,17 +23,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Publish only the site. The prototypes in designs/ stay in the repo but not on the web
+      # Publish only site/. The prototypes in designs/ stay in the repo but not on the web
       # (they still load Google Fonts).
-      - name: Collect the site
-        run: |
-          mkdir _site
-          cp -r index.html style.css app.js core.js sw.js manifest.webmanifest icon.svg fonts _site/
-          touch _site/.nojekyll
-
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: _site
+          path: site
       - id: deployment
         uses: actions/deploy-pages@v4

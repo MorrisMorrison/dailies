@@ -43,6 +43,7 @@
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
   min-height: 100dvh;
   background: var(--s2);
@@ -75,7 +76,8 @@ body::before {
 .page { overflow-x: clip; }
 main {
   max-width: 520px; margin: 0 auto;
-  padding: max(24px, env(safe-area-inset-top)) 16px max(32px, env(safe-area-inset-bottom));
+  padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+           max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   display: flex; flex-direction: column;
 }
 
@@ -84,10 +86,9 @@ main {
 .edit {
   font: inherit; color: inherit; cursor: pointer; text-shadow: none;
   border: 1px solid rgba(255, 255, 255, .5); background: rgba(255, 255, 255, .14);
-  border-radius: 999px; padding: 7px 16px;
-  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  border-radius: 999px; padding: 0 18px; min-height: 40px;
 }
-.edit:hover { background: rgba(255, 255, 255, .24); }
+@media (hover: hover) { .edit:hover { background: rgba(255, 255, 255, .24); } }
 h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; letter-spacing: -.03em; line-height: 1.05; text-wrap: balance; }
 
 /* ---- sun arc: progress meter ---- */
@@ -96,7 +97,7 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
 .halo {
   position: absolute; width: 90%; aspect-ratio: 1; max-width: 100vw; translate: -50% -50%; pointer-events: none;
   background: radial-gradient(closest-side, var(--glow), transparent);
-  opacity: .5; mix-blend-mode: soft-light;
+  opacity: .3;
   transition: left 1.2s cubic-bezier(.4, 0, .2, 1), top 1.2s cubic-bezier(.4, 0, .2, 1);
 }
 .track { fill: none; stroke: rgba(255, 255, 255, .55); stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
@@ -117,7 +118,6 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
   position: relative; display: flex; flex-direction: column; gap: 10px; padding: 16px 16px 18px;
   border-radius: 22px; border: 1px solid var(--frost-edge);
   background: var(--frost); color: var(--deep);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3);
   box-shadow: 0 10px 28px -18px rgba(10, 20, 60, .5);
   transition: background-color .35s, color .35s, border-color .35s, transform .15s;
   -webkit-tap-highlight-color: transparent;
