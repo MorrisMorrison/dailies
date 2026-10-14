@@ -19,6 +19,7 @@ Open `index.html` in a browser. To get offline support (the service worker), ser
 | `index.html`, `style.css`, `app.js` | The site (the "Daylight" design) |
 | `core.js` | The list of dailies, their icons, on-device state and the editor dialog |
 | `sw.js`, `manifest.webmanifest`, `icon.svg` | Offline support and install-to-home-screen |
+| `fonts/` | Manrope, self-hosted (SIL Open Font License) |
 | `designs/` | The five early design prototypes and a gallery to compare them |
 
 ## The dailies

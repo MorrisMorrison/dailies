@@ -1,7 +1,7 @@
 /* Dailies — offline support. Network first, so new versions show up right away;
    the cache only answers when there is no connection. */
-const CACHE = 'dailies-v1';
-const ASSETS = ['./', './index.html', './style.css', './app.js', './core.js', './icon.svg', './manifest.webmanifest'];
+const CACHE = 'dailies-v2';
+const ASSETS = ['./', './index.html', './style.css', './app.js', './core.js', './icon.svg', './manifest.webmanifest', './fonts/manrope-latin.woff2'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)));
