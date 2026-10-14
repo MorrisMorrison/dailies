@@ -1,0 +1,138 @@
+/* Dailies — Daylight.
+   Layout: one narrow column. Date and greeting, then the sun arc that doubles as the progress meter, then the cards.
+   The sky is a single deliberate look (no dark mode): app.js sets --s1..--s3, --glow and --deep from progress,
+   and the registered properties below let those colours glide from one sky to the next. */
+
+@property --s1 { syntax: '<color>'; inherits: true; initial-value: #27306b; }
+@property --s2 { syntax: '<color>'; inherits: true; initial-value: #7d6aa6; }
+@property --s3 { syntax: '<color>'; inherits: true; initial-value: #f39a68; }
+@property --glow { syntax: '<color>'; inherits: true; initial-value: #ffb36b; }
+@property --deep { syntax: '<color>'; inherits: true; initial-value: #3a3577; }
+
+:root {
+  --s1: #27306b;            /* sky, top */
+  --s2: #7d6aa6;            /* sky, middle */
+  --s3: #f39a68;            /* sky, horizon */
+  --glow: #ffb36b;          /* the sun and its halo */
+  --deep: #3a3577;          /* ink: card text, done cards */
+  --white: #ffffff;
+  --frost: rgba(255, 255, 255, .7);
+  --frost-edge: rgba(255, 255, 255, .85);
+  --shade: rgba(10, 20, 60, .28);
+  --font: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* editor dialog (core.js) */
+  --dd-bg: #ffffff; --dd-fg: #16203a; --dd-muted: #5d6a80; --dd-accent: var(--deep);
+  --dd-line: rgba(22, 32, 58, .08); --dd-font: var(--font); --dd-radius: 24px;
+
+  color-scheme: light;
+  transition: --s1 1.2s ease, --s2 1.2s ease, --s3 1.2s ease, --glow 1.2s ease, --deep 1.2s ease;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  min-height: 100dvh;
+  background: var(--s2);
+  color: var(--white);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+/* fixed sky layer: background-attachment: fixed is ignored on iOS */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -2;
+  background: linear-gradient(180deg, var(--s1) 0%, var(--s2) 50%, var(--s3) 100%);
+}
+
+.stars {
+  position: fixed; inset: 0 0 auto; height: 45vh; z-index: -1; pointer-events: none;
+  opacity: 0; transition: opacity 2.5s ease .6s;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 27% 8%, #fff 99%, transparent),
+    radial-gradient(1.5px 1.5px at 44% 26%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 63% 12%, #fff 99%, transparent),
+    radial-gradient(2px 2px at 78% 22%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 88% 6%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 6% 36%, #fff 99%, transparent),
+    radial-gradient(1.5px 1.5px at 93% 38%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 35% 40%, #fff 99%, transparent);
+}
+.complete .stars { opacity: .8; }
+
+.page { overflow-x: clip; }
+main {
+  max-width: 520px; margin: 0 auto;
+  padding: max(24px, env(safe-area-inset-top)) 16px max(32px, env(safe-area-inset-bottom));
+  display: flex; flex-direction: column;
+}
+
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; }
+.top, h1, .count { text-shadow: 0 1px 14px var(--shade); }
+.edit {
+  font: inherit; color: inherit; cursor: pointer; text-shadow: none;
+  border: 1px solid rgba(255, 255, 255, .5); background: rgba(255, 255, 255, .14);
+  border-radius: 999px; padding: 7px 16px;
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+}
+.edit:hover { background: rgba(255, 255, 255, .24); }
+h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; letter-spacing: -.03em; line-height: 1.05; text-wrap: balance; }
+
+/* ---- sun arc: progress meter ---- */
+.arc { position: relative; width: min(100%, 380px); margin: 14px auto 0; }
+.arc svg { position: relative; display: block; width: 100%; overflow: visible; }
+.halo {
+  position: absolute; width: 90%; aspect-ratio: 1; max-width: 100vw; translate: -50% -50%; pointer-events: none;
+  background: radial-gradient(closest-side, var(--glow), transparent);
+  opacity: .5; mix-blend-mode: soft-light;
+  transition: left 1.2s cubic-bezier(.4, 0, .2, 1), top 1.2s cubic-bezier(.4, 0, .2, 1);
+}
+.track { fill: none; stroke: rgba(255, 255, 255, .55); stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
+.trail { fill: none; stroke: var(--white); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.2s cubic-bezier(.4, 0, .2, 1); }
+.horizon { stroke: rgba(255, 255, 255, .6); stroke-width: 1.5; }
+.sun { transition: transform 1.2s cubic-bezier(.4, 0, .2, 1); }
+.sun .corona { fill: var(--glow); opacity: .4; }
+.sun .disc { fill: var(--glow); }
+.count { position: absolute; inset: auto 0 20px; text-align: center; }
+.count b { display: block; font-size: 54px; font-weight: 800; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; }
+.count span { display: block; margin-top: 4px; font-size: 14px; font-weight: 600; }
+
+/* ---- cards ---- */
+.cards { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.cards li:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.card {
+  appearance: none; font: inherit; text-align: left; cursor: pointer; width: 100%; height: 100%;
+  position: relative; display: flex; flex-direction: column; gap: 10px; padding: 16px 16px 18px;
+  border-radius: 22px; border: 1px solid var(--frost-edge);
+  background: var(--frost); color: var(--deep);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: 0 10px 28px -18px rgba(10, 20, 60, .5);
+  transition: background-color .35s, color .35s, border-color .35s, transform .15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.card:active { transform: scale(.97); }
+.card .dd-icon { width: 34px; height: 34px; }
+.card .dd-icon g { stroke-width: 2.4; }
+.card strong { font-size: 17px; font-weight: 700; letter-spacing: -.01em; padding-right: 28px; }
+.card small { font-size: 13px; line-height: 1.35; margin-top: -6px; opacity: .82; }
+.check {
+  position: absolute; top: 14px; right: 14px; width: 24px; height: 24px; border-radius: 50%;
+  border: 1.5px solid currentColor; opacity: .45; display: grid; place-items: center;
+  transition: background-color .3s, border-color .3s, opacity .3s;
+}
+.check svg { width: 14px; height: 14px; opacity: 0; transform: scale(.4); transition: opacity .3s, transform .3s cubic-bezier(.3, 1.6, .5, 1); }
+.check path { fill: none; stroke: var(--deep); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.card[aria-pressed="true"] { background: var(--deep); border-color: transparent; color: var(--white); }
+.card[aria-pressed="true"] .check { background: var(--white); border-color: var(--white); opacity: 1; }
+.card[aria-pressed="true"] .check svg { opacity: 1; transform: none; }
+
+.edit:focus-visible, .card:focus-visible, .note a:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+.note { margin: 24px 0 0; text-align: center; font-size: 13px; font-weight: 600; line-height: 1.6; color: var(--deep); }
+.note a { color: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  :root, *, *::before { transition: none !important; }
+}

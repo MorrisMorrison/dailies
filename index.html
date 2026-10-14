@@ -2,47 +2,44 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dailies · Design directions</title>
-<style>
-  :root { --bg: #f4f2ed; --fg: #1c1b19; --muted: #6d6a63; --card: #fff; --line: rgba(0,0,0,.08); }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #141413; --fg: #efece6; --muted: #9a968e; --card: #1e1d1b; --line: rgba(255,255,255,.08); } }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--fg); font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; }
-  main { max-width: 1240px; margin: 0 auto; padding: 40px 16px 64px; }
-  h1 { margin: 0; font-size: clamp(28px, 5vw, 40px); letter-spacing: -.02em; }
-  .lede { margin: 8px 0 32px; color: var(--muted); max-width: 60ch; line-height: 1.5; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-  a.card { display: block; color: inherit; text-decoration: none; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 12px; transition: transform .2s, box-shadow .2s; }
-  a.card:hover { transform: translateY(-3px); box-shadow: 0 16px 40px -20px rgba(0,0,0,.35); }
-  .frame { position: relative; aspect-ratio: 390 / 760; border-radius: 12px; overflow: hidden; background: #000; }
-  .frame iframe { position: absolute; top: 0; left: 0; width: 390px; height: 760px; border: 0; transform-origin: 0 0; pointer-events: none; }
-  h2 { margin: 14px 4px 4px; font-size: 17px; }
-  p.d { margin: 0 4px 6px; font-size: 14px; color: var(--muted); line-height: 1.45; }
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dailies</title>
+<meta name="description" content="Do your dailies. A tiny checklist for the basics: get outside, move, hydrate, eat well, rest, connect. No account, nothing leaves your device, fresh every morning.">
+<meta name="theme-color" content="#27306b">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div class="stars" aria-hidden="true"></div>
+<div class="page">
 <main>
-  <h1>Dailies — design directions</h1>
-  <p class="lede">Five takes on the same idea: six small things, every day, stored only on your device and reset at midnight. Tap a card to open it. They share state, so ticking something in one shows up in all of them.</p>
-  <div class="grid">
-    <a class="card" href="designs/canopy/index.html"><div class="frame"><iframe src="designs/canopy/index.html" loading="lazy" tabindex="-1" title="Canopy preview"></iframe></div>
-      <h2>1 · Canopy</h2><p class="d">Closest to the inspiration. Grainy sky over pines, chalk icons. The sky clears and warms as you finish.</p></a>
-    <a class="card" href="designs/field-notes/index.html"><div class="frame"><iframe src="designs/field-notes/index.html" loading="lazy" tabindex="-1" title="Field Notes preview"></iframe></div>
-      <h2>2 · Field Notes</h2><p class="d">A page from a pocket notebook. Ink checkboxes, pen strike-throughs, tally marks for progress.</p></a>
-    <a class="card" href="designs/daylight/index.html"><div class="frame"><iframe src="designs/daylight/index.html" loading="lazy" tabindex="-1" title="Daylight preview"></iframe></div>
-      <h2>3 · Daylight</h2><p class="d">The sky follows the real time of day. The sun travels its arc as you complete things.</p></a>
-    <a class="card" href="designs/patches/index.html"><div class="frame"><iframe src="designs/patches/index.html" loading="lazy" tabindex="-1" title="Patches preview"></iframe></div>
-      <h2>4 · Patches</h2><p class="d">Trail-badge aesthetic. Each daily is an embroidered patch you stitch on when it's done.</p></a>
-    <a class="card" href="designs/bold/index.html"><div class="frame"><iframe src="designs/bold/index.html" loading="lazy" tabindex="-1" title="Bold preview"></iframe></div>
-      <h2>5 · Bold</h2><p class="d">Type only. Outlined words fill in solid as you go, with a big score up top.</p></a>
+  <div class="top"><span id="date"></span><button type="button" class="edit" id="edit">Edit</button></div>
+  <h1 id="greet">Do your dailies.</h1>
+
+  <div class="arc" aria-hidden="true">
+    <div class="halo" id="halo"></div>
+    <svg viewBox="0 0 320 180">
+      <line class="horizon" x1="0" y1="170" x2="320" y2="170"/>
+      <path class="track" d="M20 170A140 140 0 0 1 300 170"/>
+      <path class="trail" id="trail" pathLength="1" d="M20 170A140 140 0 0 1 300 170"/>
+      <g class="sun" id="sun"><circle class="corona" r="22"/><circle class="disc" r="11"/></g>
+    </svg>
+    <div class="count"><b id="num">0/6</b><span id="sub">Start anywhere</span></div>
   </div>
+  <p class="sr-only" id="live" aria-live="polite"></p>
+
+  <ul class="cards" id="cards"></ul>
+
+  <p class="note">Fresh every morning. Nothing leaves this device.<br><a href="https://github.com/MorrisMorrison/dailies">Source on GitHub</a></p>
 </main>
-<script>
-  // Scale the 390px-wide phone previews to whatever width the card gives them.
-  const fit = () => document.querySelectorAll('.frame').forEach((f) => (f.firstElementChild.style.transform = `scale(${f.clientWidth / 390})`));
-  addEventListener('resize', fit);
-  fit();
-</script>
+</div>
+<script src="core.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
