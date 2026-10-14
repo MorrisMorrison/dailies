@@ -31,11 +31,15 @@
   const themeColor = document.querySelector('meta[name="theme-color"]');
   const TICK = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5 7.5l3 3 6-7"/></svg>';
 
-  function greeting(h) {
-    return h < 5 ? 'Still up?' : h < 12 ? 'Good morning.' : h < 17 ? 'Good afternoon.' : h < 21 ? 'Good evening.' : 'Good night.';
+  // Headline and subline follow the sun too: how many are done, not the clock.
+  function words(done, total, ratio) {
+    if (total && done === total) return ['Good evening.', 'All done. Enjoy the evening.'];
+    if (!done) return ['Rise and shine.', 'Start anywhere'];
+    if (ratio < 0.4) return ['Good morning.', 'The sun is up.'];
+    if (ratio <= 0.6) return ['High noon.', 'Halfway there.'];
+    return ['Good afternoon.', 'Past noon. Keep going.'];
   }
   function clock() {
-    $('greet').textContent = greeting(new Date().getHours());
     $('date').textContent = D.date({ weekday: 'long', month: 'long', day: 'numeric' });
   }
 
@@ -67,11 +71,9 @@
     const complete = total > 0 && done === total;
     document.body.classList.toggle('complete', complete);
     $('num').textContent = `${done}/${total}`;
-    $('sub').textContent = complete ? 'All done. Enjoy the evening.'
-      : !done ? 'Start anywhere'
-      : ratio < 0.5 ? 'The sun is up.'
-      : ratio === 0.5 ? 'Noon. Halfway there.'
-      : 'Past noon. Keep going.';
+    const [headline, sub] = words(done, total, ratio);
+    $('greet').textContent = headline;
+    $('sub').textContent = sub;
     $('live').textContent = complete ? `All ${total} dailies done.` : `${done} of ${total} dailies done.`;
   }
 
