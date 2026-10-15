@@ -166,7 +166,7 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
 
 /* ---- Your sky: a star for every day everything got done */
 
-.your-sky { margin: 20px 0 0; padding: 16px 18px 14px; border-radius: 22px; background: color-mix(in srgb, var(--deep) 80%, #000); color: var(--white); }
+.your-sky { margin: 20px 0 0; padding: 16px 18px 14px; border-radius: 22px; background: var(--deep); background: color-mix(in srgb, var(--deep) 80%, #000); color: var(--white); } /* first background: for browsers without color-mix (iOS < 16.2) */
 .your-sky-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 .your-sky h2 { margin: 0; font-size: 15px; font-weight: 700; }
 .your-sky-head span { font-size: 13px; font-weight: 600; opacity: .75; font-variant-numeric: tabular-nums; }
