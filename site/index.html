@@ -6,20 +6,26 @@
 <title>Dailies</title>
 <meta name="description" content="Do your dailies. A tiny checklist for the basics: get outside, move, hydrate, eat well, rest, connect. No account, nothing leaves your device, fresh every morning.">
 <meta name="theme-color" content="#27306b">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="manifest" href="manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="img/icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
 <link rel="preload" href="fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/editor.css">
+<script type="module" src="js/app.js"></script>
 </head>
 <body>
-<div class="stars" aria-hidden="true"></div>
+<div class="starfield" aria-hidden="true"></div>
 <div class="page">
 <main>
-  <div class="top"><span id="date"></span><button type="button" class="edit" id="edit">Edit</button></div>
-  <h1 id="greet">Do your dailies.</h1>
+  <header class="top">
+    <span id="date"></span>
+    <button type="button" class="edit" id="edit">Edit</button>
+  </header>
+  <h1 id="greeting">Do your dailies.</h1>
 
+  <!-- The sun's arc doubles as the progress meter. app.js moves the sun along it (see ARC there). -->
   <div class="arc" aria-hidden="true">
     <div class="halo" id="halo"></div>
     <svg viewBox="0 0 320 180">
@@ -28,27 +34,39 @@
       <path class="trail" id="trail" pathLength="1" d="M20 170A140 140 0 0 1 300 170"/>
       <g class="sun" id="sun"><circle class="corona" r="22"/><circle class="disc" r="11"/></g>
     </svg>
-    <div class="count"><b id="num">0/6</b><span id="sub">Start anywhere</span></div>
+    <div class="count"><b id="count">0/6</b><span id="count-line">Start anywhere</span></div>
   </div>
   <p class="sr-only" id="live" aria-live="polite"></p>
 
-  <figure class="reward" id="reward" hidden>
-    <blockquote id="quote"></blockquote>
+  <figure class="quote" id="quote" hidden>
+    <blockquote id="quote-text"></blockquote>
     <figcaption id="quote-by"></figcaption>
   </figure>
 
   <ul class="cards" id="cards"></ul>
 
-  <section class="night" aria-labelledby="night-title">
-    <div class="night-head"><h2 id="night-title">Your sky</h2><span id="night-count"></span></div>
+  <section class="your-sky" aria-labelledby="your-sky-title">
+    <div class="your-sky-head"><h2 id="your-sky-title">Your sky</h2><span id="your-sky-count"></span></div>
     <svg id="constellation" viewBox="0 0 300 120" role="img"></svg>
-    <p class="night-note" id="night-note"></p>
+    <p class="your-sky-note" id="your-sky-note"></p>
   </section>
 
   <p class="note">Fresh every morning. Nothing leaves this device.<br><a href="https://github.com/MorrisMorrison/dailies">Source on GitHub</a></p>
 </main>
 </div>
-<script src="core.js"></script>
-<script src="app.js"></script>
+
+<dialog class="editor" id="editor" tabindex="-1" aria-labelledby="editor-title">
+  <form method="dialog">
+    <header>
+      <h2 id="editor-title">Your dailies</h2>
+      <p>Choose what you want to show up for. Everything stays on this device and resets at midnight.</p>
+    </header>
+    <ul class="editor-list" id="editor-list"></ul>
+    <footer>
+      <button type="button" class="button" id="editor-reset">Back to the six</button>
+      <button class="button button-primary" value="done">Done</button>
+    </footer>
+  </form>
+</dialog>
 </body>
 </html>

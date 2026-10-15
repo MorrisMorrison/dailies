@@ -1,0 +1,10 @@
+{
+  "name": "dailies",
+  "private": true,
+  "description": "Do your dailies. A tiny on-device checklist. No dependencies, no build: this file only lets Node run the tests as ES modules.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

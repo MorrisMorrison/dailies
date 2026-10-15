@@ -2,7 +2,7 @@
 
 ## Constellation figures
 
-The constellation line figures in `site/app.js` (Your sky) are derived from [d3-celestial](https://github.com/ofrohn/d3-celestial) by Olaf Frohn. Star positions were projected and simplified for Dailies; Orion is trimmed to its classic eight stars.
+The constellation line figures in `site/js/constellations.js` (Your sky) are derived from [d3-celestial](https://github.com/ofrohn/d3-celestial) by Olaf Frohn. Star positions were projected and simplified for Dailies; Orion is trimmed to its classic eight stars.
 
 ```
 Copyright (c) 2015, Olaf Frohn
