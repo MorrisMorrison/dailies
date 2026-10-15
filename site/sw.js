@@ -1,28 +1,51 @@
-/* Dailies — offline support. Network first, so new versions show up right away;
-   the cache only answers when there is no connection. */
-const CACHE = 'dailies-v3';
-const ASSETS = ['./', './index.html', './style.css', './app.js', './core.js', './icon.svg', './manifest.webmanifest', './fonts/manrope-latin.woff2'];
+// Offline support. Network first, so a new version shows up on the next visit; the cache only
+// answers when there is no connection. Lives at the site root so it can serve every page and file.
+//
+// When you add, move or remove a file under site/, update ASSETS and bump CACHE (tests/site.test.js checks the list).
+const CACHE = 'dailies-v4';
+const ASSETS = [
+  './',
+  './index.html',
+  './manifest.webmanifest',
+  './css/style.css',
+  './css/editor.css',
+  './js/app.js',
+  './js/constellations.js',
+  './js/dailies.js',
+  './js/editor.js',
+  './js/html.js',
+  './js/icons.js',
+  './js/quotes.js',
+  './js/store.js',
+  './img/icon.svg',
+  './fonts/manrope-latin.woff2',
+];
 
-self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS.map((u) => new Request(u, { cache: 'reload' })))));
+self.addEventListener('install', (event) => {
+  // cache: 'reload' skips the browser's HTTP cache, so the copy stored here is the freshly deployed one.
+  const fresh = ASSETS.map((url) => new Request(url, { cache: 'reload' }));
+  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(fresh)));
   self.skipWaiting();
 });
 
-self.addEventListener('activate', (e) => {
-  e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))));
+self.addEventListener('activate', (event) => {
+  const stale = (keys) => keys.filter((key) => key !== CACHE).map((key) => caches.delete(key));
+  event.waitUntil(caches.keys().then((keys) => Promise.all(stale(keys))));
   self.clients.claim();
 });
 
-self.addEventListener('fetch', (e) => {
-  if (e.request.method !== 'GET' || new URL(e.request.url).origin !== location.origin) return;
-  e.respondWith(
-    // no-cache: always revalidate with the server (cheap 304s), so a deploy shows up on the next visit.
-    fetch(new Request(e.request.url, { cache: 'no-cache', credentials: 'same-origin' }))
-      .then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(e.request, copy));
-        return res;
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  if (request.method !== 'GET' || new URL(request.url).origin !== location.origin) return;
+  event.respondWith(
+    // no-cache: always revalidate with the server (cheap 304s); GitHub Pages would otherwise serve
+    // a copy up to ten minutes old from the HTTP cache.
+    fetch(new Request(request.url, { cache: 'no-cache', credentials: 'same-origin' }))
+      .then((response) => {
+        const copy = response.clone();
+        caches.open(CACHE).then((cache) => cache.put(request, copy));
+        return response;
       })
-      .catch(() => caches.match(e.request, { ignoreSearch: true })),
+      .catch(() => caches.match(request, { ignoreSearch: true })),
   );
 });

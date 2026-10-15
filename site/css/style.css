@@ -1,63 +1,74 @@
-/* Dailies — Daylight.
-   Layout: one narrow column. Date and greeting, then the sun arc that doubles as the progress meter, then the cards.
-   The sky is a single deliberate look (no dark mode): app.js sets --s1..--s3, --glow and --deep from progress,
-   and the registered properties below let those colours glide from one sky to the next. */
+/* Dailies.
+   Layout: one narrow column. Date and greeting, the sun's arc (the progress meter), the cards, Your sky.
+   The sky is one deliberate look with no dark mode: app.js sets --top, --middle, --horizon, --glow and
+   --deep from today's progress, and the registered properties below let those colours glide. */
 
-/* Manrope, self-hosted (SIL OFL, see fonts/OFL.txt) so nothing loads from a third party. */
+/* ---- Font: Manrope, self-hosted (SIL OFL, see fonts/OFL.txt) so nothing loads from a third party. */
+
 @font-face {
   font-family: 'Manrope'; font-style: normal; font-weight: 500 800; font-display: swap;
-  src: url('fonts/manrope-latin.woff2') format('woff2');
+  src: url('../fonts/manrope-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
   font-family: 'Manrope'; font-style: normal; font-weight: 500 800; font-display: swap;
-  src: url('fonts/manrope-latin-ext.woff2') format('woff2');
+  src: url('../fonts/manrope-latin-ext.woff2') format('woff2');
   unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-@property --s1{ syntax: '<color>'; inherits: true; initial-value: #27306b; }
-@property --s2 { syntax: '<color>'; inherits: true; initial-value: #7d6aa6; }
-@property --s3 { syntax: '<color>'; inherits: true; initial-value: #f39a68; }
+/* ---- Tokens */
+
+@property --top { syntax: '<color>'; inherits: true; initial-value: #27306b; }
+@property --middle { syntax: '<color>'; inherits: true; initial-value: #7d6aa6; }
+@property --horizon { syntax: '<color>'; inherits: true; initial-value: #f39a68; }
 @property --glow { syntax: '<color>'; inherits: true; initial-value: #ffb36b; }
 @property --deep { syntax: '<color>'; inherits: true; initial-value: #3a3577; }
 
 :root {
-  --s1: #27306b;            /* sky, top */
-  --s2: #7d6aa6;            /* sky, middle */
-  --s3: #f39a68;            /* sky, horizon */
-  --glow: #ffb36b;          /* the sun and its halo */
-  --deep: #3a3577;          /* ink: card text, done cards */
+  /* set from progress by app.js */
+  --top: #27306b;      /* sky, top */
+  --middle: #7d6aa6;   /* sky, middle */
+  --horizon: #f39a68;  /* sky, horizon */
+  --glow: #ffb36b;     /* the sun and its halo */
+  --deep: #3a3577;     /* ink: card text, finished cards, Your sky */
+
+  /* fixed */
   --white: #ffffff;
   --frost: rgba(255, 255, 255, .7);
   --frost-edge: rgba(255, 255, 255, .85);
   --shade: rgba(10, 20, 60, .28);
+  --paper: #ffffff;               /* editor background */
+  --ink: #16203a;                 /* editor text */
+  --ink-muted: #5d6a80;
+  --line: rgba(22, 32, 58, .08);
   --font: 'Manrope', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-
-  /* editor dialog (core.js) */
-  --dd-bg: #ffffff; --dd-fg: #16203a; --dd-muted: #5d6a80; --dd-accent: var(--deep);
-  --dd-line: rgba(22, 32, 58, .08); --dd-font: var(--font); --dd-radius: 24px;
+  --ease-out: cubic-bezier(.4, 0, .2, 1);
 
   color-scheme: light;
-  transition: --s1 1.2s ease, --s2 1.2s ease, --s3 1.2s ease, --glow 1.2s ease, --deep 1.2s ease;
+  transition: --top 1.2s ease, --middle 1.2s ease, --horizon 1.2s ease, --glow 1.2s ease, --deep 1.2s ease;
 }
+
+/* ---- Base */
 
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body {
   min-height: 100dvh;
-  background: var(--s2);
+  background: var(--middle);
   color: var(--white);
   font-family: var(--font);
   -webkit-font-smoothing: antialiased;
 }
-/* fixed sky layer: background-attachment: fixed is ignored on iOS */
+
+/* The sky sits on a fixed layer, because background-attachment: fixed is ignored on iOS. */
 body::before {
   content: ''; position: fixed; inset: 0; z-index: -2;
-  background: linear-gradient(180deg, var(--s1) 0%, var(--s2) 50%, var(--s3) 100%);
+  background: linear-gradient(180deg, var(--top) 0%, var(--middle) 50%, var(--horizon) 100%);
 }
 
-.stars {
+/* A few stars come out once the day is finished. */
+.starfield {
   position: fixed; inset: 0 0 auto; height: 45vh; z-index: -1; pointer-events: none;
   opacity: 0; transition: opacity 2.5s ease .6s;
   background-image:
@@ -71,15 +82,19 @@ body::before {
     radial-gradient(1.5px 1.5px at 93% 38%, #fff 99%, transparent),
     radial-gradient(1px 1px at 35% 40%, #fff 99%, transparent);
 }
-.complete .stars { opacity: .8; }
+.finished .starfield { opacity: .8; }
 
-.page { overflow-x: clip; }
+.page { overflow-x: clip; } /* the sun's halo may reach past the edges */
 main {
   max-width: 520px; margin: 0 auto;
   padding: max(24px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
            max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   display: flex; flex-direction: column;
 }
+
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---- Header */
 
 .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; }
 .top, h1, .count { text-shadow: 0 1px 14px var(--shade); }
@@ -91,26 +106,37 @@ main {
 @media (hover: hover) { .edit:hover { background: rgba(255, 255, 255, .24); } }
 h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; letter-spacing: -.03em; line-height: 1.05; text-wrap: balance; }
 
-/* ---- sun arc: progress meter ---- */
+/* ---- The sun's arc */
+
 .arc { position: relative; width: min(100%, 380px); margin: 14px auto 0; }
 .arc svg { position: relative; display: block; width: 100%; overflow: visible; }
 .halo {
   position: absolute; width: 90%; aspect-ratio: 1; max-width: 100vw; translate: -50% -50%; pointer-events: none;
   background: radial-gradient(closest-side, var(--glow), transparent);
   opacity: .3;
-  transition: left 1.2s cubic-bezier(.4, 0, .2, 1), top 1.2s cubic-bezier(.4, 0, .2, 1);
+  transition: left 1.2s var(--ease-out), top 1.2s var(--ease-out);
 }
-.track { fill: none; stroke: rgba(255, 255, 255, .55); stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
-.trail { fill: none; stroke: var(--white); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.2s cubic-bezier(.4, 0, .2, 1); }
 .horizon { stroke: rgba(255, 255, 255, .6); stroke-width: 1.5; }
-.sun { transition: transform 1.2s cubic-bezier(.4, 0, .2, 1); }
+.track { fill: none; stroke: rgba(255, 255, 255, .55); stroke-width: 2; stroke-dasharray: 2 7; stroke-linecap: round; }
+.trail { fill: none; stroke: var(--white); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.2s var(--ease-out); }
+.sun { transition: transform 1.2s var(--ease-out); }
 .sun .corona { fill: var(--glow); opacity: .4; }
 .sun .disc { fill: var(--glow); }
 .count { position: absolute; inset: auto 0 20px; text-align: center; }
 .count b { display: block; font-size: 54px; font-weight: 800; letter-spacing: -.04em; line-height: 1; font-variant-numeric: tabular-nums; }
 .count span { display: block; margin-top: 4px; font-size: 14px; font-weight: 600; }
 
-/* ---- cards ---- */
+/* ---- Quote of the day, shown once everything is done */
+
+.quote { margin: 18px 0 0; padding: 0 8px; text-align: center; animation: rise .9s cubic-bezier(.2, .8, .2, 1) both; }
+.quote blockquote { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.45; text-wrap: balance; white-space: pre-line; text-shadow: 0 1px 14px var(--shade); }
+.quote blockquote::before { content: '\201C'; }
+.quote blockquote::after { content: '\201D'; }
+.quote figcaption { margin-top: 8px; font-size: 13px; font-weight: 600; opacity: .85; text-shadow: 0 1px 14px var(--shade); }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+/* ---- Cards */
+
 .cards { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .cards li:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .card {
@@ -123,8 +149,8 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
   -webkit-tap-highlight-color: transparent;
 }
 .card:active { transform: scale(.97); }
-.card .dd-icon { width: 34px; height: 34px; }
-.card .dd-icon g { stroke-width: 2.4; }
+.card .icon { width: 34px; height: 34px; }
+.card .icon g { stroke-width: 2.4; }
 .card strong { font-size: 17px; font-weight: 700; letter-spacing: -.01em; padding-right: 28px; overflow-wrap: anywhere; }
 .card small { font-size: 13px; line-height: 1.35; margin-top: -6px; opacity: .82; }
 .check {
@@ -138,35 +164,30 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
 .card[aria-pressed="true"] .check { background: var(--white); border-color: var(--white); opacity: 1; }
 .card[aria-pressed="true"] .check svg { opacity: 1; transform: none; }
 
-.edit:focus-visible, .card:focus-visible, .note a:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
+/* ---- Your sky: a star for every day everything got done */
 
-/* ---- reward: quote of the day, shown once everything is done ---- */
-.reward { margin: 18px 0 0; padding: 0 8px; text-align: center; animation: rise .9s cubic-bezier(.2, .8, .2, 1) both; }
-.reward blockquote { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.45; text-wrap: balance; white-space: pre-line; text-shadow: 0 1px 14px var(--shade); }
-.reward blockquote::before { content: '\201C'; }
-.reward blockquote::after { content: '\201D'; }
-.reward figcaption { margin-top: 8px; font-size: 13px; font-weight: 600; opacity: .85; text-shadow: 0 1px 14px var(--shade); }
-@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
-
-/* ---- your sky: a star for every day everything got done ---- */
-.night { margin: 20px 0 0; padding: 16px 18px 14px; border-radius: 22px; background: color-mix(in srgb, var(--deep) 80%, #000); color: var(--white); }
-.night-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
-.night h2 { margin: 0; font-size: 15px; font-weight: 700; }
-.night-head span { font-size: 13px; font-weight: 600; opacity: .75; font-variant-numeric: tabular-nums; }
-.night svg { display: block; width: 100%; height: auto; margin: 8px 0 6px; overflow: visible; }
-.night .link { fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 1.2; stroke-linejoin: round; }
-.night .dot { fill: rgba(255, 255, 255, .3); }
-.night .star { fill: var(--white); filter: drop-shadow(0 0 4px rgba(255, 255, 255, .85)); }
-.night .star.new { transform-box: fill-box; transform-origin: center; animation: twinkle 1.6s ease-out both; }
+.your-sky { margin: 20px 0 0; padding: 16px 18px 14px; border-radius: 22px; background: color-mix(in srgb, var(--deep) 80%, #000); color: var(--white); }
+.your-sky-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.your-sky h2 { margin: 0; font-size: 15px; font-weight: 700; }
+.your-sky-head span { font-size: 13px; font-weight: 600; opacity: .75; font-variant-numeric: tabular-nums; }
+.your-sky svg { display: block; width: 100%; height: auto; margin: 8px 0 6px; overflow: visible; }
+.your-sky .link { fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 1.2; stroke-linejoin: round; }
+.your-sky .dot { fill: rgba(255, 255, 255, .3); }
+.your-sky .star { fill: var(--white); filter: drop-shadow(0 0 4px rgba(255, 255, 255, .85)); }
+.your-sky .star.new { transform-box: fill-box; transform-origin: center; animation: twinkle 1.6s ease-out both; }
 @keyframes twinkle { 0% { transform: scale(0); opacity: 0; } 40% { transform: scale(2.4); opacity: 1; } 100% { transform: scale(1); } }
-.night-note { margin: 0; font-size: 13px; line-height: 1.5; opacity: .8; }
+.your-sky-note { margin: 0; font-size: 13px; line-height: 1.5; opacity: .8; }
 
-.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* ---- Footer */
 
 .note { margin: 24px 0 0; text-align: center; font-size: 13px; font-weight: 600; line-height: 1.6; color: var(--deep); }
 .note a { color: inherit; }
 
+/* ---- Focus and motion */
+
+.edit:focus-visible, .card:focus-visible, .note a:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
+
 @media (prefers-reduced-motion: reduce) {
   :root, *, *::before { transition: none !important; }
-  .reward, .night .star.new { animation: none; }
+  .quote, .your-sky .star.new { animation: none; }
 }

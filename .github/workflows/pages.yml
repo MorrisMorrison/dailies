@@ -23,8 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Publish only site/. The prototypes in designs/ stay in the repo but not on the web
-      # (they still load Google Fonts).
+      # Never publish a broken build.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm test
+
+      # Publish site/ exactly as it is: no build step.
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
