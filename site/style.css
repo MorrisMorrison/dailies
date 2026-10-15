@@ -125,7 +125,7 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
 .card:active { transform: scale(.97); }
 .card .dd-icon { width: 34px; height: 34px; }
 .card .dd-icon g { stroke-width: 2.4; }
-.card strong { font-size: 17px; font-weight: 700; letter-spacing: -.01em; padding-right: 28px; }
+.card strong { font-size: 17px; font-weight: 700; letter-spacing: -.01em; padding-right: 28px; overflow-wrap: anywhere; }
 .card small { font-size: 13px; line-height: 1.35; margin-top: -6px; opacity: .82; }
 .check {
   position: absolute; top: 14px; right: 14px; width: 24px; height: 24px; border-radius: 50%;

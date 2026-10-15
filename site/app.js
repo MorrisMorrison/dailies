@@ -46,7 +46,7 @@
   function render() {
     cards.innerHTML = D.list.map((d) => `
       <li><button class="card" type="button" data-id="${d.id}" aria-pressed="${D.isDone(d.id)}">
-        ${D.icon(d.id)}<strong>${d.label}</strong><small>${d.hint}</small><span class="check">${TICK}</span>
+        ${D.icon(d.id)}<strong>${D.esc(d.label)}</strong>${d.hint ? `<small>${D.esc(d.hint)}</small>` : ''}<span class="check">${TICK}</span>
       </button></li>`).join('');
     paint();
   }

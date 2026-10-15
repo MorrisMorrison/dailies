@@ -27,7 +27,7 @@ Every push to `main` publishes `site/` to GitHub Pages (`.github/workflows/pages
 
 ## The dailies
 
-Six on by default, more you can switch on with **Edit**:
+Six on by default, more you can switch on with **Edit**. You can also add up to 10 of your own, each with a name and an icon.
 
 | Default | Optional |
 |---|---|
