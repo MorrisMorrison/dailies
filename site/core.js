@@ -29,11 +29,12 @@
     pill: '<g transform="rotate(-40 24 24)"><rect x="8.5" y="17.5" width="31" height="13" rx="6.5"/><path d="M24 17.5v13"/></g>',
     donut: '<circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="5.5"/><path d="M25.7 12.5l2.4 1.4M33.9 22.2l1.8-2.1M31.7 30.5l0.5 2.8M19.7 34.6l2.8 0.5M11.9 27.4l2.6-1M15.4 14.9l1.4 2.4"/>',
     bed: '<path d="M8 12v26M40 24v14M8 24h32M8 32h32"/><path d="M15 17h4a3 3 0 0 1 3 3v4H12v-4a3 3 0 0 1 3-3z"/>',
+    church: '<path d="M24 6v8M20.5 9.5h7M13 41V27l11-9 11 9v14M7 41h34"/><path d="M20 41v-6a4 4 0 0 1 8 0v6"/>',
   };
 
   // Icons a custom daily can use, generic shapes first. Names are for screen readers.
   const ICON_NAMES = {
-    star: 'Star', leaf: 'Leaf', music: 'Music note', dumbbell: 'Dumbbell', cup: 'Cup', pill: 'Pill', donut: 'Donut', bed: 'Bed',
+    star: 'Star', leaf: 'Leaf', music: 'Music note', dumbbell: 'Dumbbell', cup: 'Cup', pill: 'Pill', donut: 'Donut', bed: 'Bed', church: 'Church',
     outside: 'Sun', move: 'Waves', hydrate: 'Drop', nourish: 'Apple', rest: 'Moon', connect: 'Smile',
     breathe: 'Wind', unplug: 'Plug', create: 'Pencil', learn: 'Book', tidy: 'Sparkle', gratitude: 'Heart',
     play: 'Kite', give: 'Gift',
