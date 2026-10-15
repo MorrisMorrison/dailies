@@ -5,7 +5,7 @@
 
 A tiny website for the small things that keep you well: get outside, move, hydrate, eat well, rest, connect.
 
-**[morrismorrison.github.io/dailies](https://morrismorrison.github.io/dailies/)**
+**[dailies.health](https://dailies.health/)**
 
 - **No accounts, no server, no tracking.** Everything is stored in your browser (`localStorage`) and never leaves your device.
 - **Fresh every morning.** Ticks reset at local midnight.
@@ -44,7 +44,7 @@ Uses Node's built-in test runner (Node 22 or later) and installs nothing. The te
 
 | Path | What it is |
 |---|---|
-| `site/` | The website, exactly as it is published. Every push to `main` deploys it to GitHub Pages. |
+| `site/` | The website, exactly as it is published. Every push to `main` deploys it to GitHub Pages at [dailies.health](https://dailies.health/). |
 | `site/index.html` | The page and the Edit dialog |
 | `site/css/` | `style.css` for the page, `editor.css` for the Edit dialog |
 | `site/js/app.js` | Draws the page: sky, sun, cards, quote, Your sky |
