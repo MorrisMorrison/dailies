@@ -59,6 +59,32 @@
   const BUILTIN_IDS = new Set(BUILTIN.map((d) => d.id));
   const DEFAULT_ENABLED = BUILTIN.filter((d) => d.core).map((d) => d.id);
   const MAX_CUSTOM = 10;
+  const MAX_HISTORY = 3660;
+
+  // Shown once all of today's dailies are done; one per day, picked by date.
+  // Public domain only: authors long dead, translations published before 1929.
+  const QUOTES = [
+    { text: 'Write it on your heart that every day is the best day in the year.', by: 'Ralph Waldo Emerson' },
+    { text: 'Adopt the pace of nature: her secret is patience.', by: 'Ralph Waldo Emerson' },
+    { text: 'The first wealth is health.', by: 'Ralph Waldo Emerson' },
+    { text: 'Nothing great was ever achieved without enthusiasm.', by: 'Ralph Waldo Emerson' },
+    { text: 'Our life is frittered away by detail. Simplify, simplify.', by: 'Henry David Thoreau' },
+    { text: 'Morning is when I am awake and there is a dawn in me.', by: 'Henry David Thoreau' },
+    { text: 'Heaven is under our feet as well as over our heads.', by: 'Henry David Thoreau' },
+    { text: 'Live in each season as it passes; breathe the air, drink the drink, taste the fruit.', by: 'Henry David Thoreau' },
+    { text: 'Look within. Within is the fountain of good, and it will ever bubble up, if thou wilt ever dig.', by: 'Marcus Aurelius, tr. George Long' },
+    { text: 'While we are postponing, life speeds by.', by: 'Seneca, tr. Richard M. Gummere' },
+    { text: 'Hold every hour in your grasp.', by: 'Seneca, tr. Richard M. Gummere' },
+    { text: 'In every walk with nature one receives far more than he seeks.', by: 'John Muir' },
+    { text: 'The mountains are calling and I must go.', by: 'John Muir' },
+    { text: 'Early to bed and early to rise, makes a man healthy, wealthy, and wise.', by: 'Benjamin Franklin' },
+  ];
+
+  function quoteFor(day) {
+    let h = 0;
+    for (const ch of day) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    return QUOTES[h % QUOTES.length];
+  }
   const MAX_LABEL = 32;
 
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -101,18 +127,21 @@
     }
   }
 
-  // Anything from a previous day is dropped: the list resets every morning.
+  // Ticks from a previous day are dropped: the list resets every morning.
+  // `history` is the one thing that carries over: the dates of days where everything got done.
   function load() {
     const s = read() || {};
     const custom = cleanCustom(s.custom);
     const ids = known(custom);
     const enabled = Array.isArray(s.enabled) ? s.enabled.filter((id) => ids.has(id)) : [];
     const sameDay = s.day === dayKey();
+    const history = Array.isArray(s.history) ? [...new Set(s.history.filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d)))].sort() : [];
     return {
       enabled: enabled.length ? enabled : DEFAULT_ENABLED.slice(),
       day: dayKey(),
       done: sameDay && Array.isArray(s.done) ? s.done.filter((id) => ids.has(id)) : [],
       custom,
+      history: history.slice(-MAX_HISTORY),
     };
   }
 
@@ -123,8 +152,16 @@
     listeners.forEach((fn) => fn(api));
   }
 
+  // Today counts as a completed day exactly while every switched-on daily is ticked,
+  // so unticking (or adding a new daily) takes today's star back.
+  function withHistory(s) {
+    const complete = s.enabled.length > 0 && s.enabled.every((id) => s.done.includes(id));
+    const others = s.history.filter((d) => d !== s.day);
+    return { ...s, history: complete ? [...others, s.day].slice(-MAX_HISTORY) : others };
+  }
+
   function commit(next) {
-    state = next;
+    state = withHistory(next);
     write(state);
     emit();
   }
@@ -333,6 +370,11 @@ html:has(.dd-editor[open]){overflow:hidden}
       const done = list.filter((d) => state.done.includes(d.id)).length;
       return { done, total: list.length, ratio: list.length ? done / list.length : 0 };
     },
+    // Days on which every daily got done, today included once it is.
+    get stars() {
+      return state.history.length;
+    },
+    quote: () => quoteFor(state.day),
     icon,
     esc,
     addCustom,

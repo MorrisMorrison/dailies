@@ -29,6 +29,8 @@ Every push to `main` publishes `site/` to GitHub Pages (`.github/workflows/pages
 
 Six on by default, more you can switch on with **Edit**. You can also add up to 10 of your own, each with a name and an icon.
 
+Finish all of them and you get a quote of the day, plus a star in **Your sky**. Ten stars make a constellation. Only the dates of finished days are kept, on your device.
+
 | Default | Optional |
 |---|---|
 | Get outside · Move · Hydrate · Eat well · Rest · Connect | Breathe · Unplug · Create · Learn · Tidy · Be grateful · Play · Be kind |

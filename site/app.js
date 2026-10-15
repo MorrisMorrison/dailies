@@ -74,7 +74,47 @@
     const [headline, sub] = words(done, total, ratio);
     $('greet').textContent = headline;
     $('sub').textContent = sub;
-    $('live').textContent = complete ? `All ${total} dailies done.` : `${done} of ${total} dailies done.`;
+    const q = D.quote();
+    $('live').textContent = complete ? `All ${total} dailies done. ${q.text} ${q.by}.` : `${done} of ${total} dailies done.`;
+    paintReward(complete, q);
+  }
+
+  // ---- Reward: the quote of the day once everything is done, and a star for every day you finish.
+  // Ten stars make a constellation; the shapes take turns (viewBox 300×90).
+  const PER = 10;
+  const CONSTELLATIONS = [
+    [[18, 62], [52, 48], [86, 56], [118, 36], [150, 46], [182, 24], [214, 34], [246, 58], [270, 44], [288, 18]],
+    [[16, 30], [48, 64], [80, 28], [112, 62], [144, 26], [176, 58], [208, 34], [240, 66], [268, 40], [288, 70]],
+    [[16, 70], [40, 50], [70, 34], [104, 24], [140, 20], [176, 22], [210, 30], [240, 44], [266, 60], [286, 74]],
+  ];
+  let lastStars = null;
+
+  function paintReward(complete, q) {
+    if (complete) {
+      $('quote').textContent = q.text;
+      $('quote-by').textContent = q.by;
+    }
+    $('reward').hidden = !complete;
+
+    const stars = D.stars;
+    const lit = stars === 0 ? 0 : ((stars - 1) % PER) + 1; // a finished constellation stays full until the next star
+    const finished = Math.floor(stars / PER);
+    const pts = CONSTELLATIONS[Math.floor(Math.max(stars - 1, 0) / PER) % CONSTELLATIONS.length];
+    const fresh = lastStars !== null && stars > lastStars; // twinkle only for a star earned on this visit
+    lastStars = stars;
+
+    const path = lit > 1 ? `<path class="link" d="M${pts.slice(0, lit).map((p) => p.join(' ')).join('L')}"/>` : '';
+    const dots = pts.map(([x, y], i) => (i < lit
+      ? `<circle class="star${fresh && i === lit - 1 ? ' new' : ''}" cx="${x}" cy="${y}" r="3.2"/>`
+      : `<circle class="dot" cx="${x}" cy="${y}" r="1.6"/>`)).join('');
+    const svg = $('constellation');
+    svg.innerHTML = path + dots;
+    svg.setAttribute('aria-label', `${lit} of ${PER} stars lit`);
+
+    $('night-count').textContent = `${lit}/${PER}`;
+    $('night-note').textContent = stars === 0 ? 'Finish all your dailies to light your first star.'
+      : lit === PER ? `Constellation complete. ${finished === 1 ? 'Your first one.' : `That makes ${finished}.`}`
+      : `Every day you finish lights a star. ${PER - lit} more to complete this one.`;
   }
 
   cards.addEventListener('click', (e) => {
