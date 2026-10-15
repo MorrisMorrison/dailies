@@ -29,7 +29,7 @@ Every push to `main` publishes `site/` to GitHub Pages (`.github/workflows/pages
 
 Six on by default, more you can switch on with **Edit**. You can also add up to 10 of your own, each with a name and an icon.
 
-Finish all of them and you get a quote of the day, plus a star in **Your sky**. Ten stars make a constellation. Only the dates of finished days are kept, on your device.
+Finish all of them and you get a quote of the day (36 public-domain lines, no repeats until every one has shown), plus a star in **Your sky**. Stars fill in real constellations, from Cassiopeia and the Big Dipper to Orion and Pegasus. Only the dates of finished days are kept, on your device.
 
 | Default | Optional |
 |---|---|
@@ -37,4 +37,4 @@ Finish all of them and you get a quote of the day, plus a star in **Your sky**. 
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). Third-party notices (constellation data, font, quotes): [THIRD_PARTY.md](THIRD_PARTY.md).

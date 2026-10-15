@@ -142,7 +142,7 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
 
 /* ---- reward: quote of the day, shown once everything is done ---- */
 .reward { margin: 18px 0 0; padding: 0 8px; text-align: center; animation: rise .9s cubic-bezier(.2, .8, .2, 1) both; }
-.reward blockquote { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.45; text-wrap: balance; text-shadow: 0 1px 14px var(--shade); }
+.reward blockquote { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.45; text-wrap: balance; white-space: pre-line; text-shadow: 0 1px 14px var(--shade); }
 .reward blockquote::before { content: '\201C'; }
 .reward blockquote::after { content: '\201D'; }
 .reward figcaption { margin-top: 8px; font-size: 13px; font-weight: 600; opacity: .85; text-shadow: 0 1px 14px var(--shade); }
