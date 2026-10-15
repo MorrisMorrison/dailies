@@ -140,6 +140,27 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
 
 .edit:focus-visible, .card:focus-visible, .note a:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
 
+/* ---- reward: quote of the day, shown once everything is done ---- */
+.reward { margin: 18px 0 0; padding: 0 8px; text-align: center; animation: rise .9s cubic-bezier(.2, .8, .2, 1) both; }
+.reward blockquote { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.45; text-wrap: balance; text-shadow: 0 1px 14px var(--shade); }
+.reward blockquote::before { content: '\201C'; }
+.reward blockquote::after { content: '\201D'; }
+.reward figcaption { margin-top: 8px; font-size: 13px; font-weight: 600; opacity: .85; text-shadow: 0 1px 14px var(--shade); }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+/* ---- your sky: a star for every day everything got done ---- */
+.night { margin: 20px 0 0; padding: 16px 18px 14px; border-radius: 22px; background: color-mix(in srgb, var(--deep) 80%, #000); color: var(--white); }
+.night-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.night h2 { margin: 0; font-size: 15px; font-weight: 700; }
+.night-head span { font-size: 13px; font-weight: 600; opacity: .75; font-variant-numeric: tabular-nums; }
+.night svg { display: block; width: 100%; height: auto; margin: 8px 0 6px; overflow: visible; }
+.night .link { fill: none; stroke: rgba(255, 255, 255, .45); stroke-width: 1.2; stroke-linejoin: round; }
+.night .dot { fill: rgba(255, 255, 255, .3); }
+.night .star { fill: var(--white); filter: drop-shadow(0 0 4px rgba(255, 255, 255, .85)); }
+.night .star.new { transform-box: fill-box; transform-origin: center; animation: twinkle 1.6s ease-out both; }
+@keyframes twinkle { 0% { transform: scale(0); opacity: 0; } 40% { transform: scale(2.4); opacity: 1; } 100% { transform: scale(1); } }
+.night-note { margin: 0; font-size: 13px; line-height: 1.5; opacity: .8; }
+
 .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 .note { margin: 24px 0 0; text-align: center; font-size: 13px; font-weight: 600; line-height: 1.6; color: var(--deep); }
@@ -147,4 +168,5 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
 
 @media (prefers-reduced-motion: reduce) {
   :root, *, *::before { transition: none !important; }
+  .reward, .night .star.new { animation: none; }
 }
