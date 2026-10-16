@@ -17,7 +17,7 @@ function row(daily) {
   const remove = daily.custom
     ? `<button type="button" class="editor-remove" data-remove="${daily.id}" aria-label="Remove ${esc(daily.label)}">${REMOVE_ICON}</button>`
     : '';
-  return `<li class="editor-row">
+  return `<li class="editor-row" data-id="${daily.id}">
     <label class="editor-pick"><input type="checkbox" value="${daily.id}"${checked}>${icon(daily.icon)}
       <span><strong>${esc(daily.label)}</strong>${hint}</span></label>${remove}
   </li>`;
@@ -31,25 +31,62 @@ function addForm() {
     const checked = name === pickedIcon ? ' checked' : '';
     return `<label title="${label}"><input type="radio" name="editor-icon" value="${name}" aria-label="${label}"${checked}>${icon(name)}</label>`;
   });
+  // Add sits next to the name, with the icons below, so it is never right above Done (#19).
   return `<li class="editor-add">
     <h3>Add your own</h3>
-    <input class="editor-name" id="editor-name" type="text" maxlength="${MAX_LABEL}" placeholder="e.g. Water the plants" aria-label="Name of your daily" autocomplete="off">
+    <div class="editor-add-name">
+      <input class="editor-name" id="editor-name" type="text" maxlength="${MAX_LABEL}" placeholder="e.g. Stretch" aria-label="Name of your daily" autocomplete="off">
+      <button type="button" class="button button-primary" data-add disabled>Add</button>
+    </div>
     <fieldset class="editor-icons"><legend>Icon</legend>${choices.join('')}</fieldset>
-    <div class="editor-add-row"><small>Stays on this device.</small><button type="button" class="button button-primary" data-add disabled>Add</button></div>
+    <small>Stays on this device.</small>
   </li>`;
 }
 
-/** Redraws the list, keeping the scroll position, or jumping to the add form after adding one. */
-function render({ afterAdd = false } = {}) {
+/** Redraws the list, keeping the scroll position. */
+function render() {
   const scroll = list.scrollTop;
   list.innerHTML = store.allDailies().map(row).join('') + addForm();
-  list.scrollTop = afterAdd ? list.scrollHeight : scroll;
-  if (afterAdd) $('editor-name')?.focus();
+  list.scrollTop = scroll;
+}
+
+const ADDED_FOR = 1600; // ms the confirmation stays up
+let addedTimer;
+
+// Confirms an add where the eye already is (#17): the button says "Added ✓", the new row lights up
+// briefly, and screen readers hear it. The name field is empty again and keeps focus for the next one.
+function confirmAdded(id, label) {
+  const newRow = list.querySelector(`.editor-row[data-id="${id}"]`);
+  const button = list.querySelector('[data-add]');
+  const name = $('editor-name');
+  name?.focus({ preventScroll: true });
+  if (newRow) {
+    newRow.classList.add('is-new');
+    // Bring the new row into view, with the form still visible below it.
+    const offset = newRow.getBoundingClientRect().top - list.getBoundingClientRect().top;
+    list.scrollTop += offset - list.clientHeight / 3;
+  }
+  if (button) {
+    button.textContent = 'Added ✓';
+    button.disabled = false; // full colour while confirming; add() ignores an empty name anyway
+    clearTimeout(addedTimer);
+    addedTimer = setTimeout(() => {
+      if (!button.isConnected) return;
+      button.textContent = 'Add';
+      button.disabled = !cleanLabel(name?.value);
+    }, ADDED_FOR);
+  }
+  $('editor-live').textContent = `${label} added.`;
 }
 
 function add() {
   const name = $('editor-name');
-  if (name && store.addCustom(name.value, pickedIcon)) render({ afterAdd: true });
+  if (!name) return;
+  const label = cleanLabel(name.value);
+  const id = store.addCustom(label, pickedIcon);
+  if (!id) return;
+  render();
+  confirmAdded(id, label);
 }
 
 list.addEventListener('change', (event) => {
@@ -65,7 +102,10 @@ list.addEventListener('change', (event) => {
 });
 
 list.addEventListener('input', (event) => {
-  if (event.target.id === 'editor-name') list.querySelector('[data-add]').disabled = !cleanLabel(event.target.value);
+  if (event.target.id !== 'editor-name') return;
+  const button = list.querySelector('[data-add]');
+  button.textContent = 'Add'; // typing the next name ends the "Added ✓" confirmation
+  button.disabled = !cleanLabel(event.target.value);
 });
 
 list.addEventListener('keydown', (event) => {

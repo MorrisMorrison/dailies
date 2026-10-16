@@ -31,12 +31,16 @@ html:has(.editor[open]) { overflow: hidden; } /* the page behind stays put while
 
 /* ---- One row per daily */
 
-.editor-row { display: flex; align-items: center; gap: 4px; }
+.editor-row { display: flex; align-items: center; gap: 4px; border-radius: 12px; }
 .editor-pick { flex: 1; min-width: 0; display: grid; grid-template-columns: 20px 30px 1fr; gap: 12px; align-items: center; padding: 9px 12px; border-radius: 12px; cursor: pointer; }
 .editor-pick strong { overflow-wrap: anywhere; }
 .editor-pick input { accent-color: var(--deep); width: 18px; height: 18px; margin: 0; }
 .editor-remove { flex: none; width: 36px; height: 36px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--ink-muted); cursor: pointer; }
 .editor-remove svg { width: 18px; height: 18px; }
+
+/* A daily that was just added lights up briefly (#17). */
+.editor-row.is-new { animation: just-added 1.6s ease-out; }
+@keyframes just-added { from { background: color-mix(in srgb, var(--deep) 16%, transparent); } }
 @media (hover: hover) {
   .editor-pick:hover, .editor-remove:hover { background: var(--line); }
   .editor-remove:hover { color: var(--ink); }
@@ -46,7 +50,9 @@ html:has(.editor[open]) { overflow: hidden; } /* the page behind stays put while
 
 .editor-add { margin: 10px 2px 8px; padding: 16px 10px 4px; border-top: 1px solid var(--line); }
 .editor-add h3 { margin: 0 0 10px; font-size: 15px; }
-.editor-name { width: 100%; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--ink); }
+.editor-add-name { display: flex; gap: 8px; align-items: stretch; }
+.editor-add-name .button { flex: none; white-space: nowrap; min-width: 84px; }
+.editor-name { flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--ink); }
 .editor-name:focus { outline: 2px solid var(--deep); outline-offset: 1px; }
 .editor-icons { border: 0; margin: 12px 0 10px; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 6px; }
 .editor-icons legend { font-size: 13px; color: var(--ink-muted); margin-bottom: 8px; padding: 0; }
@@ -55,9 +61,12 @@ html:has(.editor[open]) { overflow: hidden; } /* the page behind stays put while
 .editor-icons .icon { width: 26px; height: 26px; }
 .editor-icons label:has(input:checked) { border-color: var(--deep); background: var(--line); color: var(--ink); }
 .editor-icons label:has(input:focus-visible) { outline: 2px solid var(--deep); outline-offset: 2px; }
-.editor-add-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 
 /* Short screens (phones in landscape): give the list the room. */
+@media (prefers-reduced-motion: reduce) {
+  .editor-row.is-new { animation: none; }
+}
+
 @media (max-height: 480px) {
   .editor { max-height: calc(100dvh - 16px); }
   .editor header { padding: 14px 20px 6px; }
