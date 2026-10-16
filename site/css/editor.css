@@ -25,7 +25,7 @@ html:has(.editor[open]) { overflow: hidden; } /* the page behind stays put while
 
 /* ---- Buttons */
 
-.button { font: inherit; font-size: 14px; border-radius: 999px; padding: 9px 18px; cursor: pointer; border: 1px solid var(--line); background: transparent; color: var(--ink); }
+.button { font: inherit; font-size: 14px; white-space: nowrap; border-radius: 999px; padding: 9px 18px; cursor: pointer; border: 1px solid var(--line); background: transparent; color: var(--ink); }
 .button-primary { background: var(--deep); border-color: var(--deep); color: var(--paper); font-weight: 600; }
 .button:disabled { opacity: .4; cursor: default; }
 
@@ -64,4 +64,10 @@ html:has(.editor[open]) { overflow: hidden; } /* the page behind stays put while
   .editor header p { display: none; }
   .editor-pick { padding: 6px 12px; }
   .editor footer { padding: 10px 20px 12px; }
+}
+
+/* The narrowest phones (320px): keep "Reset to defaults" and "Done" on one line. */
+@media (max-width: 360px) {
+  .editor footer { padding-inline: 16px; }
+  .editor footer .button { padding-inline: 14px; }
 }
