@@ -2,7 +2,7 @@
 // answers when there is no connection. Lives at the site root so it can serve every page and file.
 //
 // When you add, move or remove a file under site/, update ASSETS and bump CACHE (tests/site.test.js checks the list).
-const CACHE = 'dailies-v7';
+const CACHE = 'dailies-v8';
 const ASSETS = [
   './',
   './index.html',
@@ -18,10 +18,14 @@ const ASSETS = [
   './js/html.js',
   './js/icons.js',
   './js/quotes.js',
+  './js/share.js',
   './js/sky.js',
   './js/store.js',
   './img/icon.svg',
   './img/apple-touch-icon.png',
+  './img/icon-192.png',
+  './img/icon-512.png',
+  './img/icon-maskable-512.png',
   './fonts/manrope-latin.woff2',
 ];
 

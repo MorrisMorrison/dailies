@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Dailies</title>
 <meta name="description" content="Do your dailies. A tiny checklist for the basics: get outside, move, hydrate, eat well, rest, connect. No account, nothing leaves your device, fresh every morning.">
+<!-- The link preview in messengers and social apps. Crawlers need absolute URLs. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Dailies">
+<meta property="og:title" content="Dailies">
+<meta property="og:description" content="Six small things, every day. A tiny checklist that lives on your phone: no account, nothing leaves your device.">
+<meta property="og:url" content="https://dailies.health/">
+<meta property="og:image" content="https://dailies.health/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Dailies: a sun rising over the horizon. Get outside, move, hydrate, eat well, rest, connect.">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#27306b">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -55,7 +66,17 @@
     <p class="your-sky-note" id="your-sky-note"></p>
   </section>
 
-  <p class="note">Fresh every morning. Nothing leaves this device.<br><a href="https://github.com/MorrisMorrison/dailies">Source on GitHub</a></p>
+  <!-- Shown on phones to people who came back after a finished day; see js/share.js. -->
+  <section class="install" id="install" hidden aria-labelledby="install-title">
+    <h2 id="install-title">Keep Dailies on your home screen</h2>
+    <p id="install-text"></p>
+    <div class="install-actions">
+      <button type="button" class="install-go" id="install-go" hidden>Install</button>
+      <button type="button" class="install-dismiss" id="install-dismiss">No thanks</button>
+    </div>
+  </section>
+
+  <p class="note">Fresh every morning. Nothing leaves this device.<br><button type="button" class="share" id="share">Share Dailies</button> · <a href="https://github.com/MorrisMorrison/dailies">Source on GitHub</a></p>
 </main>
 </div>
 
