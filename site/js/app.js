@@ -1,6 +1,8 @@
 // The page. The sun follows your progress and the sky follows the sun: sunrise when nothing is done,
-// noon halfway, sunset when everything is. Finishing the day shows a quote and lights a star.
+// noon halfway, sunset when everything is. The greeting follows the clock. Finishing the day shows a
+// quote and lights a star.
 import { $, esc } from './html.js';
+import { greeting, dayLine } from './greeting.js';
 import { icon } from './icons.js';
 import { quoteFor } from './quotes.js';
 import { skyFor } from './constellations.js';
@@ -39,16 +41,6 @@ function sunPosition(ratio) {
   return { x: ARC.cx - ARC.r * Math.cos(angle), y: ARC.cy - ARC.r * Math.sin(angle) };
 }
 
-// ---- Words. The headline follows the sun too: how many are done, not the clock.
-
-function headline(done, total, ratio) {
-  if (total && done === total) return ['Good evening.', 'All done. Enjoy the evening.'];
-  if (!done) return ['Rise and shine.', 'Start anywhere'];
-  if (ratio < 0.4) return ['Good morning.', 'The sun is up.'];
-  if (ratio <= 0.6) return ['High noon.', 'Halfway there.'];
-  return ['Good afternoon.', 'Past noon. Keep going.'];
-}
-
 // ---- Painting.
 
 const cards = $('cards');
@@ -80,11 +72,15 @@ function paintSun(ratio) {
   $('trail').style.strokeDashoffset = 1 - ratio;
 }
 
-function paintWords({ done, total, ratio }, finished, quote) {
-  const [greeting, line] = headline(done, total, ratio);
-  $('greeting').textContent = greeting;
+// The greeting and the line under the count depend on the clock as well, so they repaint every minute.
+function paintWords({ done, total }) {
+  const hour = new Date().getHours();
+  $('greeting').textContent = greeting(hour);
   $('count').textContent = `${done}/${total}`;
-  $('count-line').textContent = line;
+  $('count-line').textContent = dayLine(hour, done, total);
+}
+
+function announce({ done, total }, finished, quote) {
   $('live').textContent = finished ? `All ${total} dailies done. ${quote.text} ${quote.by}.` : `${done} of ${total} dailies done.`;
 }
 
@@ -128,14 +124,16 @@ function paint() {
   paintCards();
   paintSky(progress.ratio);
   paintSun(progress.ratio);
-  paintWords(progress, finished, quote);
+  paintWords(progress);
+  announce(progress, finished, quote);
   paintQuote(finished, quote);
   paintYourSky();
   document.body.classList.toggle('finished', finished);
 }
 
-function paintDate() {
+function paintClock() {
   $('date').textContent = new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+  paintWords(store.progress());
 }
 
 // ---- Wiring.
@@ -159,8 +157,8 @@ store.subscribe(() => {
 
 renderCards();
 paint();
-paintDate();
-setInterval(paintDate, 60 * 1000);
+paintClock();
+setInterval(paintClock, 60 * 1000);
 store.watch();
 
 // Offline support. Service workers only run over http(s), not from a file opened on disk.
