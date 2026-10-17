@@ -1,36 +1,16 @@
 // The page. The sun follows your progress and the sky follows the sun: sunrise when nothing is done,
-// noon halfway, sunset when everything is. The greeting follows the clock. Finishing the day shows a
-// quote and lights a star.
+// noon halfway, sunset when everything is. The season tints the sky's light, and the greeting follows
+// the clock. Finishing the day shows a quote and lights a star.
 import { $, esc } from './html.js';
 import { greeting, dayLine } from './greeting.js';
 import { icon } from './icons.js';
 import { quoteFor } from './quotes.js';
 import { skyFor } from './constellations.js';
+import { COLOURS, seasonalSky, hemisphereOf } from './sky.js';
 import { openEditor } from './editor.js';
 import * as store from './store.js';
 
-// ---- Sky colours along the sun's path: top, middle, horizon, the sun's glow, and the ink on cards.
-
-const SKY = [
-  { at: 0.0, top: '#27306b', middle: '#7d6aa6', horizon: '#f39a68', glow: '#ffb36b', deep: '#3a3577' }, // sunrise
-  { at: 0.25, top: '#2563c2', middle: '#6b9fdc', horizon: '#f6c79b', glow: '#ffe0a8', deep: '#1f4d94' }, // morning
-  { at: 0.5, top: '#1d6ccd', middle: '#4f9ae6', horizon: '#cbe5f8', glow: '#fff6d6', deep: '#17488a' }, // noon
-  { at: 0.75, top: '#2a5fb4', middle: '#7f93cf', horizon: '#f5b98a', glow: '#ffd39a', deep: '#2b4688' }, // afternoon
-  { at: 1.0, top: '#2a2461', middle: '#9c4d7c', horizon: '#f0844f', glow: '#ff9a5c', deep: '#452a66' }, // sunset
-];
-const COLOURS = ['top', 'middle', 'horizon', 'glow', 'deep'];
-
-const toRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
-const toHex = (rgb) => '#' + rgb.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
-const mix = (a, b, t) => toHex(toRgb(a).map((v, i) => v + (toRgb(b)[i] - v) * t));
-
-/** The sky at a point of the day, 0 (sunrise) to 1 (sunset), blended between the two nearest keyframes. */
-function skyAt(ratio) {
-  const i = Math.min(SKY.length - 2, Math.floor(ratio * (SKY.length - 1)));
-  const [a, b] = [SKY[i], SKY[i + 1]];
-  const t = (ratio - a.at) / (b.at - a.at);
-  return Object.fromEntries(COLOURS.map((key) => [key, mix(a[key], b[key], t)]));
-}
+const hemisphere = hemisphereOf(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
 // ---- The sun's arc. Must match the <svg viewBox="0 0 320 180"> arc in index.html.
 
@@ -59,7 +39,7 @@ function paintCards() {
 }
 
 function paintSky(ratio) {
-  const sky = skyAt(ratio);
+  const sky = seasonalSky(ratio, new Date(), hemisphere);
   for (const key of COLOURS) document.documentElement.style.setProperty(`--${key}`, sky[key]);
   themeColor.content = sky.top;
 }
