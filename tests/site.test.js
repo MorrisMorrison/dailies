@@ -39,3 +39,15 @@ test('every id the scripts look up exists in index.html', () => {
     }
   }
 });
+
+test('the Edit dialog never sizes its column from a 0% flex basis', () => {
+  // The dialog only has a max-height. Older Safari engines (iPad/iOS) take a 0% basis (`flex: 1`) on
+  // its form and list literally, collapse the dialog to zero height and show only the backdrop.
+  const css = read('css/editor.css');
+  const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  for (const selector of ['.editor form', '.editor-list']) {
+    const rule = css.match(new RegExp(`^${escape(selector)} \\{([^}]*)\\}`, 'm'))?.[1];
+    assert.ok(rule, `${selector} rule exists`);
+    assert.match(rule, /flex: 1 1 auto;/, `${selector} grows from its content`);
+  }
+});
