@@ -12,7 +12,7 @@ A tiny website for the small things that keep you well: get outside, move, hydra
 - **Vanilla HTML, CSS and JavaScript.** No framework, no dependencies, no build step.
 - **Works offline** and can be added to your home screen.
 
-The sun on the page is your progress: it rises with your first daily, reaches noon halfway through, and sets when you're done. The sky follows it. The greeting follows the clock, with a line that notices how far you are ("All done before noon.").
+The sun on the page is your progress: it rises with your first daily, reaches noon halfway through, and sets when you're done. The sky follows it, with a light that changes gently with the seasons: paler and crisper in winter, richer in summer. The greeting follows the clock, with a line that notices how far you are ("All done before noon.").
 
 ## The dailies
 
@@ -48,6 +48,7 @@ Uses Node's built-in test runner (Node 22 or later) and installs nothing. The te
 | `site/index.html` | The page and the Edit dialog |
 | `site/css/` | `style.css` for the page, `editor.css` for the Edit dialog |
 | `site/js/app.js` | Draws the page: sky, sun, cards, quote, Your sky |
+| `site/js/sky.js`, `colour.js` | The sky's colours: progress, seasons (hemisphere guessed from the timezone) and a contrast guard |
 | `site/js/editor.js` | The Edit dialog |
 | `site/js/store.js` | On-device state: what's switched on, today's ticks, your own dailies, finished days |
 | `site/js/dailies.js`, `icons.js`, `quotes.js`, `constellations.js`, `greeting.js` | Content: the built-in dailies, icon shapes, quotes, star positions, the greeting wording |
