@@ -8,6 +8,7 @@ import { quoteFor } from './quotes.js';
 import { skyFor } from './constellations.js';
 import { COLOURS, seasonalSky, hemisphereOf } from './sky.js';
 import { openEditor } from './editor.js';
+import { setupSharing } from './share.js';
 import * as store from './store.js';
 
 const hemisphere = hemisphereOf(Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -140,6 +141,7 @@ paint();
 paintClock();
 setInterval(paintClock, 60 * 1000);
 store.watch();
+setupSharing(store.earlierFinishedDays);
 
 // Offline support. Service workers only run over http(s), not from a file opened on disk.
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

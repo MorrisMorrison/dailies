@@ -1,11 +1,23 @@
 {
+  "id": "./",
   "name": "Dailies",
   "short_name": "Dailies",
   "description": "Do your dailies. A tiny checklist for the basics, fresh every morning.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#1d6ccd",
   "theme_color": "#1d6ccd",
-  "icons": [{ "src": "img/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+  "categories": ["health", "lifestyle", "productivity"],
+  "icons": [
+    { "src": "img/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "img/screenshot-day.png", "sizes": "1080x2400", "type": "image/png", "form_factor": "narrow", "label": "Halfway through the day: the sun high, three of six dailies done" },
+    { "src": "img/screenshot-done.png", "sizes": "1080x2400", "type": "image/png", "form_factor": "narrow", "label": "All done: sunset, stars and the quote of the day" }
+  ]
 }

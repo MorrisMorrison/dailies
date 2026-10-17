@@ -112,3 +112,9 @@ test('tells listeners about every change', () => {
   store.toggle('outside');
   assert.equal(calls, 2);
 });
+
+test('counts finished days before today separately', () => {
+  useStored({ day: today, enabled: ['outside'], done: ['outside'], history: ['2020-01-01', today] });
+  assert.equal(store.finishedDays(), 2);
+  assert.equal(store.earlierFinishedDays(), 1);
+});
