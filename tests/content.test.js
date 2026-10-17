@@ -5,6 +5,7 @@ import { QUOTES, quoteFor } from '../site/js/quotes.js';
 import { CONSTELLATIONS, CYCLE, skyFor } from '../site/js/constellations.js';
 import { ICONS, isIcon } from '../site/js/icons.js';
 import { BUILTIN } from '../site/js/dailies.js';
+import { greeting, dayLine } from '../site/js/greeting.js';
 
 const day = (offset) => new Date(Date.UTC(2026, 0, 1) + offset * 864e5).toISOString().slice(0, 10);
 const author = (quote) => quote.by.split(',')[0];
@@ -50,4 +51,21 @@ test('every built-in daily has an icon, and icon labels are unique', () => {
   for (const daily of BUILTIN) assert.ok(isIcon(daily.icon), daily.id);
   const labels = Object.values(ICONS).map((i) => i.label);
   assert.equal(new Set(labels).size, labels.length);
+});
+
+test('the greeting follows the clock, not progress', () => {
+  assert.equal(greeting(3), 'Still up?');
+  assert.equal(greeting(8), 'Good morning.');
+  assert.equal(greeting(13), 'Good afternoon.');
+  assert.equal(greeting(19), 'Good evening.');
+  assert.equal(greeting(23), 'Good night.');
+});
+
+test('the line under the count combines time of day and progress', () => {
+  assert.equal(dayLine(9, 6, 6), 'All done before noon.');
+  assert.equal(dayLine(9, 0, 6), 'Fresh start.');
+  assert.equal(dayLine(14, 2, 6), 'Keep going.');
+  assert.equal(dayLine(20, 6, 6), 'All done. Rest well.');
+  assert.equal(dayLine(1, 0, 6), "A quiet day. That's ok.", 'late night reads as evening');
+  for (let hour = 0; hour < 24; hour++) for (const done of [0, 3, 6]) assert.ok(dayLine(hour, done, 6), `${hour}h ${done}/6`);
 });
