@@ -1,10 +1,14 @@
 {
   "name": "dailies",
   "private": true,
-  "description": "Do your dailies. A tiny on-device checklist. No dependencies, no build: this file only lets Node run the tests as ES modules.",
+  "description": "Do your dailies. A tiny on-device checklist. The site has no dependencies and no build: this file runs the tests. `npm test` uses Node only; `npm run test:browser` checks the page in real browsers with Playwright (a dev-only dependency).",
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "test:browser": "node --test --test-concurrency=1 \"tests/browser/*.spec.js\""
+  },
+  "devDependencies": {
+    "playwright": "1.64.1"
   },
   "license": "MIT"
 }
