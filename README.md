@@ -39,7 +39,23 @@ npx serve site
 npm test
 ```
 
-Uses Node's built-in test runner (Node 22 or later) and installs nothing. The tests run on every pull request, and again before each deploy.
+Uses Node's built-in test runner (Node 22 or later) and installs nothing. These tests cover the logic: state, content rules, sky colours, the geometry of the shooting stars, and the published files. They run on every pull request, and again before each deploy.
+
+```sh
+npm install
+npx playwright install webkit chromium
+npm run test:browser
+```
+
+The browser tests check the page itself in WebKit (iPhone) and Chromium (Android and desktop):
+- ticking;
+- the home-screen button and sheet for each kind of browser;
+- the shooting stars, and scrolling back to the sky;
+- the quote that stays;
+- the Edit dialog and the quote collections;
+- the Share button.
+
+They use [Playwright](https://playwright.dev), a dev-only dependency: the site itself has none. They run on every pull request.
 
 ## Layout
 
