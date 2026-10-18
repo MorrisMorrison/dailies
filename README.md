@@ -66,6 +66,7 @@ The five early design prototypes are kept under the git tag [`prototypes`](https
 - **An icon:** add one entry to `ICONS` in `site/js/icons.js`. It appears in the picker automatically.
 - **A quote:** add it to `site/js/quotes.js` with the collections it belongs to, but only if it is in the public domain in both the US and the EU, fits the idea of dailies, and you have checked it word for word against the original text. Keep any one author at no more than half of a collection, so they never come up two days running.
 - **A file under `site/`:** list it in `ASSETS` in `site/sw.js` and bump `CACHE`. A test fails if you forget.
+- **Any change to a script or stylesheet:** bump `CACHE` in `site/sw.js` and set the same number in every `?v=` in `site/index.html` (the stylesheets, the entry script and the import map). That way a page never mixes files from two releases out of a cache. A new module also needs a line in the import map. Tests check all of this.
 
 ## License
 
