@@ -75,7 +75,7 @@ Early design prototypes are kept under the git tag [`prototypes`](https://github
 
 ## Conventions
 
-- **Releases:** any change under `site/` bumps `CACHE` in `site/sw.js`, and every `?v=` in `site/index.html` (stylesheets, entry script, import map) gets the same number. New files go into `ASSETS`; new modules into the import map. Tests check all of this.
+- **Releases:** after changing anything under `site/`, run `npm run release`.
 - **Icons:** add an entry to `ICONS` in `site/js/icons.js`; it appears in the picker.
 - **Quotes:** add to `site/js/quotes.js` with their collections. Every quote must:
   - be public domain in both the US and the EU;

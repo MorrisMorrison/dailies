@@ -1,14 +1,14 @@
 // Offline support. Network first, so a new version shows up on the next visit; the cache only
 // answers when there is no connection. Lives at the site root so it can serve every page and file.
 //
-// When you add, move or remove a file under site/, update ASSETS and bump CACHE (tests/site.test.js checks the list).
-const CACHE = 'dailies-v13';
+// CACHE and ASSETS are written by `npm run release` (scripts/release.js); tests/site.test.js checks them.
+const CACHE = 'dailies-v14';
 const ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
-  './css/style.css',
   './css/editor.css',
+  './css/style.css',
   './js/app.js',
   './js/celebrate.js',
   './js/colour.js',
@@ -22,11 +22,11 @@ const ASSETS = [
   './js/share.js',
   './js/sky.js',
   './js/store.js',
-  './img/icon.svg',
   './img/apple-touch-icon.png',
   './img/icon-192.png',
   './img/icon-512.png',
   './img/icon-maskable-512.png',
+  './img/icon.svg',
   './fonts/manrope-latin.woff2',
 ];
 

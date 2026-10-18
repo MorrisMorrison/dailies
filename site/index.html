@@ -29,29 +29,29 @@
 <!-- Every script and stylesheet URL carries the release version (= the number in sw.js's CACHE), so a
      page never mixes files from two releases out of a cache. This page itself is never cached, so it
      always names the current version. The import map does the same for the modules' own imports.
-     Bump all of them together with CACHE; tests/site.test.js checks they agree. -->
-<link rel="stylesheet" href="css/style.css?v=13">
-<link rel="stylesheet" href="css/editor.css?v=13">
+     `npm run release` updates them all, with CACHE; tests/site.test.js checks they agree. -->
+<link rel="stylesheet" href="css/style.css?v=14">
+<link rel="stylesheet" href="css/editor.css?v=14">
 <script type="importmap">
 {
   "imports": {
-    "./js/app.js": "./js/app.js?v=13",
-    "./js/celebrate.js": "./js/celebrate.js?v=13",
-    "./js/colour.js": "./js/colour.js?v=13",
-    "./js/constellations.js": "./js/constellations.js?v=13",
-    "./js/dailies.js": "./js/dailies.js?v=13",
-    "./js/editor.js": "./js/editor.js?v=13",
-    "./js/greeting.js": "./js/greeting.js?v=13",
-    "./js/html.js": "./js/html.js?v=13",
-    "./js/icons.js": "./js/icons.js?v=13",
-    "./js/quotes.js": "./js/quotes.js?v=13",
-    "./js/share.js": "./js/share.js?v=13",
-    "./js/sky.js": "./js/sky.js?v=13",
-    "./js/store.js": "./js/store.js?v=13"
+    "./js/app.js": "./js/app.js?v=14",
+    "./js/celebrate.js": "./js/celebrate.js?v=14",
+    "./js/colour.js": "./js/colour.js?v=14",
+    "./js/constellations.js": "./js/constellations.js?v=14",
+    "./js/dailies.js": "./js/dailies.js?v=14",
+    "./js/editor.js": "./js/editor.js?v=14",
+    "./js/greeting.js": "./js/greeting.js?v=14",
+    "./js/html.js": "./js/html.js?v=14",
+    "./js/icons.js": "./js/icons.js?v=14",
+    "./js/quotes.js": "./js/quotes.js?v=14",
+    "./js/share.js": "./js/share.js?v=14",
+    "./js/sky.js": "./js/sky.js?v=14",
+    "./js/store.js": "./js/store.js?v=14"
   }
 }
 </script>
-<script type="module" src="js/app.js?v=13"></script>
+<script type="module" src="js/app.js?v=14"></script>
 </head>
 <body>
 <div class="starfield" aria-hidden="true"></div>
