@@ -25,9 +25,36 @@ test('the service worker caches every file of the site', () => {
 
 test('everything index.html links to exists', () => {
   const html = read('index.html');
-  const links = [...html.matchAll(/(?:href|src)="([^":#]+)"/g)].map((m) => m[1]);
+  const links = [...html.matchAll(/(?:href|src)="([^":#]+)"/g)].map((m) => m[1].split('?')[0]);
   assert.ok(links.length > 0);
   for (const link of links) assert.ok(existsSync(join(SITE, link)), link);
+});
+
+// ---- Versioned URLs: a page must never mix scripts and styles from two releases out of a cache.
+
+const VERSION = read('sw.js').match(/const CACHE = 'dailies-v(\d+)'/)[1];
+const importMap = () => JSON.parse(read('index.html').match(/<script type="importmap">([\s\S]*?)<\/script>/)[1]).imports;
+
+test('every stylesheet and script in index.html carries the release version from sw.js', () => {
+  const html = read('index.html');
+  const assets = [...html.matchAll(/(?:href|src)="((?:css|js)\/[^"]+)"/g)].map((m) => m[1]);
+  assert.ok(assets.length >= 3);
+  for (const url of assets) assert.match(url, new RegExp(`\\?v=${VERSION}$`), url);
+});
+
+test('the import map sends every module to its versioned URL', () => {
+  const modules = filesIn(SITE).filter((f) => /^js\/.*\.js$/.test(f));
+  const map = importMap();
+  assert.deepEqual(Object.keys(map).sort(), modules.map((f) => `./${f}`).sort(), 'one entry per module');
+  for (const [from, to] of Object.entries(map)) assert.equal(to, `${from}?v=${VERSION}`, from);
+});
+
+test('modules import each other by plain relative paths, which the import map can version', () => {
+  for (const file of filesIn(SITE).filter((f) => /^js\/.*\.js$/.test(f))) {
+    for (const [, path] of read(file).matchAll(/^import [^'"]*['"]([^'"]+)['"]/gm)) {
+      assert.match(path, /^\.\/[\w-]+\.js$/, `${file} imports ${path}`);
+    }
+  }
 });
 
 test('every id the scripts look up exists in index.html', () => {
