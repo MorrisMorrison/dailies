@@ -1,5 +1,7 @@
-name: Deploy to GitHub Pages
+name: Deploy
 
+# Every push to main: run all the tests first (the Tests workflow, both jobs), then publish site/ to
+# GitHub Pages. Nothing goes live unless every test passed.
 on:
   push:
     branches: [main]
@@ -7,28 +9,28 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
+
   deploy:
+    needs: tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-
-      # Never publish a broken build.
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm test
-
       # Publish site/ exactly as it is: no build step.
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

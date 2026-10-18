@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "test:browser": "node --test --test-concurrency=1 \"tests/browser/*.spec.js\""
+    "test:browser": "node --test --test-concurrency=1 \"tests/browser/*.spec.js\"",
+    "coverage:unit": "node -e \"require('fs').mkdirSync('coverage', { recursive: true })\" && node --test --experimental-test-coverage --test-coverage-include=\"site/js/**\" --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/unit.lcov",
+    "coverage:browser": "node tests/browser/coverage-report.js"
   },
   "devDependencies": {
+    "monocart-coverage-reports": "3.0.0",
     "playwright": "1.64.1"
   },
   "license": "MIT"

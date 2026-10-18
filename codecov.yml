@@ -1,0 +1,22 @@
+# Coverage of site/js/ from the Node tests (flag "unit") and the browser tests in Chromium ("browser").
+# Informational for now: coverage changes are reported on pull requests but never fail them.
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+comment:
+  layout: "condensed_header, condensed_files, condensed_footer"
+  require_changes: true
+flags:
+  unit:
+    paths: [site/js/]
+    carryforward: true
+  browser:
+    paths: [site/js/]
+    carryforward: true
+ignore:
+  - tests/
