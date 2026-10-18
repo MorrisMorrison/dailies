@@ -36,7 +36,14 @@
 <main>
   <header class="top">
     <span id="date"></span>
-    <button type="button" class="edit" id="edit">Edit</button>
+    <span class="top-actions">
+      <button type="button" class="top-button" id="install-open" aria-label="Add to Home Screen" title="Add to Home Screen" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v10M7.5 10l4.5 4.5 4.5-4.5M5 19h14"/></svg>
+      </button>
+      <button type="button" class="top-button" id="edit" aria-label="Edit your dailies" title="Edit your dailies">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 5.5l3 3L9 18l-4 1 1-4z"/><path d="M13.5 7.5l3 3"/></svg>
+      </button>
+    </span>
   </header>
   <h1 id="greeting">Do your dailies.</h1>
 
@@ -79,6 +86,18 @@
   <p class="note">Fresh every morning. Nothing leaves this device.<br><button type="button" class="share" id="share">Share Dailies</button> · <a href="https://github.com/MorrisMorrison/dailies">Source on GitHub</a></p>
 </main>
 </div>
+
+<!-- How to add Dailies to the home screen, for browsers without an install prompt; see js/share.js. -->
+<dialog class="sheet" id="install-sheet" aria-labelledby="install-sheet-title">
+  <form method="dialog">
+    <h2 id="install-sheet-title">Add Dailies to your Home Screen</h2>
+    <ol class="sheet-steps" id="install-steps"></ol>
+    <footer>
+      <button type="button" class="button" id="install-copy" hidden>Copy link</button>
+      <button class="button button-primary" value="done" autofocus>Done</button>
+    </footer>
+  </form>
+</dialog>
 
 <dialog class="editor" id="editor" tabindex="-1" aria-labelledby="editor-title">
   <form method="dialog">

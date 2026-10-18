@@ -11,7 +11,7 @@ A tiny website for the small things that keep you well: get outside, move, hydra
 - **Visits are only counted, never tracked.** The site is served through Cloudflare, which counts requests on its side (how many visits, roughly how many people). There are no analytics scripts or cookies, and nothing is stored on your device for it.
 - **Fresh every morning.** Ticks reset at local midnight.
 - **Vanilla HTML, CSS and JavaScript.** No framework, no dependencies, no build step.
-- **Works offline** and installs to your home screen like an app. On phones, people who come back after a finished day get a short note on how to do that in their browser (an Install button on Android, the Share menu on iPhone and iPad, "open it in your browser" inside apps like Instagram). It can be dismissed for good.
+- **Works offline** and can be added to your home screen, where it opens full screen from its own icon. On phones, the download button at the top does that from the first visit: the browser's install prompt on Android, short steps for the Share menu on iPhone and iPad, and "open it in your browser" inside apps like Instagram. People who come back after a finished day also get a reminder, which can be dismissed for good.
 
 The sun on the page is your progress: it rises with your first daily, reaches noon halfway through, and sets when you're done. The sky follows it, with a light that changes gently with the seasons: paler and crisper in winter, richer in summer. The greeting follows the clock, with a line that notices how far you are ("All done before noon.").
 
@@ -51,7 +51,7 @@ Uses Node's built-in test runner (Node 22 or later) and installs nothing. The te
 | `site/js/app.js` | Draws the page: sky, sun, cards, quote, Your sky |
 | `site/js/sky.js`, `colour.js` | The sky's colours: progress, seasons (hemisphere guessed from the timezone) and a contrast guard |
 | `site/js/editor.js` | The Edit dialog |
-| `site/js/share.js` | The home-screen note and the Share button |
+| `site/js/share.js` | The home-screen button, sheet and reminder, and the Share button |
 | `site/js/store.js` | On-device state: what's switched on, today's ticks, your own dailies, finished days |
 | `site/js/dailies.js`, `icons.js`, `quotes.js`, `constellations.js`, `greeting.js` | Content: the built-in dailies, icon shapes, quotes, star positions, the greeting wording |
 | `site/sw.js`, `site/manifest.webmanifest` | Offline support and install-to-home-screen |

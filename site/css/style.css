@@ -98,12 +98,15 @@ main {
 
 .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; }
 .top, h1, .count { text-shadow: 0 1px 14px var(--shade); }
-.edit {
-  font: inherit; color: inherit; cursor: pointer; text-shadow: none;
+.top-actions { display: flex; gap: 8px; flex: none; }
+.top-button {
+  font: inherit; color: inherit; cursor: pointer;
   border: 1px solid rgba(255, 255, 255, .5); background: rgba(255, 255, 255, .14);
-  border-radius: 999px; padding: 0 18px; min-height: 40px;
+  border-radius: 50%; width: 40px; height: 40px; padding: 0; display: grid; place-items: center;
 }
-@media (hover: hover) { .edit:hover { background: rgba(255, 255, 255, .24); } }
+.top-button[hidden] { display: none; }
+.top-button svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+@media (hover: hover) { .top-button:hover { background: rgba(255, 255, 255, .24); } }
 h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; letter-spacing: -.03em; line-height: 1.05; text-wrap: balance; }
 
 /* ---- The sun's arc */
@@ -196,7 +199,7 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
 
 /* ---- Focus and motion */
 
-.edit:focus-visible, .card:focus-visible, .note a:focus-visible, .share:focus-visible, .install-actions button:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
+.top-button:focus-visible, .card:focus-visible, .note a:focus-visible, .share:focus-visible, .install-actions button:focus-visible { outline: 2px solid var(--white); outline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
   :root, *, *::before { transition: none !important; }
