@@ -4,7 +4,7 @@
 import { $, esc } from './html.js';
 import { greeting, dayLine } from './greeting.js';
 import { icon } from './icons.js';
-import { quoteFor } from './quotes.js';
+import { QUOTES, quoteFor } from './quotes.js';
 import { skyFor } from './constellations.js';
 import { COLOURS, seasonalSky, hemisphereOf } from './sky.js';
 import { openEditor } from './editor.js';
@@ -99,21 +99,39 @@ function paintYourSky() {
     : `Every day you finish lights a star. ${stars.length - lit} more to complete ${name}.`;
 }
 
-// Shooting stars each time the day becomes finished during this visit (not when the page opens on a
-// finished day). Unticking clears the sky again.
+// Each time the day becomes finished during this visit (not when the page opens on a finished day):
+// back to the top, so the sky, the quote and the shooting stars are in view (the shower starts 1.3 s
+// later), plus a short vibration where the browser has one (Android; Safari has none). Unticking
+// clears the sky again.
 let wasFinished = null;
 
 function paintCelebration(finished) {
-  if (finished && wasFinished === false) celebrate();
+  if (finished && wasFinished === false) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // On the next frame, once the quote is in: Safari drops a smooth scroll when the page grows under it.
+    if (scrollY > 0) requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' }));
+    navigator.vibrate?.([30, 60, 30]);
+    celebrate();
+  }
   if (!finished && wasFinished) clearSky();
   wasFinished = finished;
+}
+
+// The quote you got when you finished stays for the rest of the day, even if you change the
+// collections afterwards; those apply from the next day.
+function todaysQuote(finished) {
+  const kept = QUOTES.find((q) => q.text === store.keptQuote());
+  if (kept) return kept;
+  const quote = quoteFor(store.today(), store.quoteCollections());
+  if (finished) store.keepQuote(quote.text);
+  return quote;
 }
 
 function paint() {
   const progress = store.progress();
   const finished = progress.total > 0 && progress.done === progress.total;
   paintCelebration(finished);
-  const quote = quoteFor(store.today(), store.quoteCollections());
+  const quote = todaysQuote(finished);
   paintCards();
   paintSky(progress.ratio);
   paintSun(progress.ratio);

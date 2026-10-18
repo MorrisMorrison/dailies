@@ -31,11 +31,12 @@ export function plan(width, band) {
 
 // ---- Drawing.
 
-// The sky band ends at the sun's horizon line, wherever it is on screen now (the layer is fixed, like
-// the sky), or at 45% of the screen when the arc is scrolled out of the way.
+// The sky band ends at the sun's horizon line as it sits with the page at the top (the page scrolls
+// there when the day gets finished; the layer is fixed, like the sky), or at 45% of the screen when
+// the arc is somewhere unusual.
 function skyBand() {
   const arc = document.querySelector('.arc svg').getBoundingClientRect();
-  const horizon = arc.top + (arc.height * 170) / 180; // the horizon line in the arc's 320×180 viewBox
+  const horizon = arc.top + scrollY + (arc.height * 170) / 180; // the horizon line in the arc's 320×180 viewBox
   return horizon > innerHeight * 0.25 && horizon < innerHeight * 0.6 ? horizon : innerHeight * 0.45;
 }
 
