@@ -4,88 +4,86 @@
 [![Tests](https://github.com/MorrisMorrison/dailies/actions/workflows/tests.yml/badge.svg)](https://github.com/MorrisMorrison/dailies/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/MorrisMorrison/dailies/graph/badge.svg)](https://codecov.io/gh/MorrisMorrison/dailies)
 
-A tiny website for the small things that keep you well: get outside, move, hydrate, eat well, rest, connect.
+A small daily-habits checklist that runs entirely in the browser. Live at [dailies.health](https://dailies.health/).
 
-**[dailies.health](https://dailies.health/)**
+<p align="center">
+  <a href="https://github.com/user-attachments/assets/499e2d16-d544-4692-a803-d2ea95a569f5">
+    <img width="220" alt="Dailies at the end of a day" src="https://github.com/user-attachments/assets/499e2d16-d544-4692-a803-d2ea95a569f5" />
+  </a>
+</p>
 
-- **No accounts, no server, no tracking.** Everything is stored in your browser (`localStorage`) and never leaves your device.
-- **Visits are only counted, never tracked.** The site is served through Cloudflare, which counts requests on its side (how many visits, roughly how many people). There are no analytics scripts or cookies, and nothing is stored on your device for it.
-- **Fresh every morning.** Ticks reset at local midnight.
-- **Vanilla HTML, CSS and JavaScript.** No framework, no dependencies, no build step.
-- **Works offline** and can be added to your home screen, where it opens full screen from its own icon. On phones, the download button at the top does that from the first visit: the browser's install prompt on Android, short steps for the Share menu on iPhone and iPad, and "open it in your browser" inside apps like Instagram. People who come back after a finished day also get a reminder, which can be dismissed for good.
+## Features
 
-The sun on the page is your progress: it rises with your first daily, reaches noon halfway through, and sets when you're done. The sky follows it, with a light that changes gently with the seasons: paler and crisper in winter, richer in summer. The greeting follows the clock, with a line that notices how far you are ("All done before noon.").
+- **Dailies:**
+  - six on by default: get outside, move, hydrate, eat well, rest, connect;
+  - eight optional ones;
+  - up to 10 custom ones (a name and an icon).
+- **State:** in `localStorage` only; no accounts, no server, no analytics. Ticks reset at local midnight.
+- **Progress:** shown as the sun on an arc. The sky colours follow it and shift with the season.
+- **When the day is finished:**
+  - shooting stars;
+  - a quote of the day from the chosen collections (Classic, Nature, Stoics, Poetry, Storybooks; all public domain);
+  - a star in "Your sky", which fills 15 real constellations over time.
+- **Installable:** works as a PWA (web app manifest, service worker with offline fallback), with install steps for each kind of browser.
 
-## The dailies
+Vanilla HTML, CSS and JavaScript with native ES modules. No framework, no build step, no runtime dependencies.
 
-Six are on by default, and more can be switched on under **Edit**. You can also add up to 10 of your own, each with a name and an icon.
+## Development
 
-| Default | Optional |
-|---|---|
-| Get outside · Move · Hydrate · Eat well · Rest · Connect | Breathe · Unplug · Create · Learn · Tidy · Be grateful · Play · Be kind |
-
-Finish all of them and the page glides back to the sky, where a few shooting stars cross it, the last one staying as a new star (on Android, the phone gives a short buzz too). You also get a **quote of the day**, which stays until midnight, from the collections you pick under **Edit**: Classic (a bit of everything), Nature, Stoics, Poetry or Storybooks. Every line is public domain and checked against its original text, with no repeats until every one has shown. Each finished day also lights a star in **Your sky**. The stars fill real constellations, from Cassiopeia and the Big Dipper to Orion and Pegasus. Only the dates of finished days are kept, on your device.
-
-## Run it locally
-
-The page uses ES modules, so it has to be served over http rather than opened as a file. Any static file server works, for example:
+The site uses ES modules, so serve it over http:
 
 ```sh
 npx serve site
 ```
 
-## Tests
+### Tests
 
 ```sh
-npm test
+npm test                                  # logic, Node only (Node 22+), nothing to install
+npm install && npx playwright install webkit chromium
+npm run test:browser                      # the page in WebKit and Chromium (Playwright)
 ```
 
-Uses Node's built-in test runner (Node 22 or later) and installs nothing. These tests cover the logic: state, content rules, sky colours, the geometry of the shooting stars, and the published files. They run on every pull request.
+Coverage of `site/js/`:
+- **Node tests:** `npm run coverage:unit`.
+- **Browser tests:** `COVERAGE=1 npm run test:browser && npm run coverage:browser` (Chromium only).
 
-```sh
-npm install
-npx playwright install webkit chromium
-npm run test:browser
-```
+Playwright and the coverage tooling are dev dependencies; the site itself has none.
 
-The browser tests check the page itself in WebKit (iPhone) and Chromium (Android and desktop):
-- ticking;
-- the home-screen button and sheet for each kind of browser;
-- the shooting stars, and scrolling back to the sky;
-- the quote that stays;
-- the Edit dialog and the quote collections;
-- the Share button.
+### CI
 
-They use [Playwright](https://playwright.dev), a dev-only dependency: the site itself has none. They run on every pull request.
-
-Every push to `main` runs both suites before anything is published: the **Deploy** workflow calls the Tests workflow and publishes `site/` to GitHub Pages only if every test passed. Coverage of `site/js/` goes to [Codecov](https://codecov.io/gh/MorrisMorrison/dailies). It's measured by Node's built-in coverage for the Node tests and by Chromium for the browser tests (WebKit can't measure it); `npm run coverage:unit` and `COVERAGE=1 npm run test:browser && npm run coverage:browser` produce the reports locally.
+- **Tests** runs both suites on every pull request.
+- **Deploy** runs on every push to `main`: it runs Tests, then publishes `site/` to GitHub Pages only if both suites passed.
+- Coverage is reported to [Codecov](https://codecov.io/gh/MorrisMorrison/dailies).
 
 ## Layout
 
-| Path | What it is |
+| Path | Contents |
 |---|---|
-| `site/` | The website, exactly as it is published. Every push to `main` deploys it to GitHub Pages once all tests pass, served through Cloudflare at [dailies.health](https://dailies.health/). |
-| `site/index.html` | The page and the Edit dialog |
-| `site/css/` | `style.css` for the page, `editor.css` for the Edit dialog |
-| `site/js/app.js` | Draws the page: sky, sun, cards, quote, Your sky |
-| `site/js/sky.js`, `colour.js` | The sky's colours: progress, seasons (hemisphere guessed from the timezone) and a contrast guard |
+| `site/` | The published site, deployed as is |
+| `site/js/app.js` | Page rendering: sky, sun, cards, quote, Your sky |
+| `site/js/store.js` | On-device state |
 | `site/js/editor.js` | The Edit dialog |
-| `site/js/celebrate.js` | The shooting stars when the day is finished |
-| `site/js/share.js` | The home-screen button, sheet and reminder, and the Share button |
-| `site/js/store.js` | On-device state: what's switched on, today's ticks, your own dailies, finished days |
-| `site/js/dailies.js`, `icons.js`, `quotes.js`, `constellations.js`, `greeting.js` | Content: the built-in dailies, icon shapes, quotes, star positions, the greeting wording |
-| `site/sw.js`, `site/manifest.webmanifest` | Offline support and install-to-home-screen |
-| `site/img/`, `site/fonts/` | App icons, the link-preview image (`og.png`), install screenshots, and the self-hosted Manrope font |
-| `tests/` | Tests for state, content rules and the published files |
+| `site/js/share.js` | Install button, install sheet and reminder, Share button |
+| `site/js/celebrate.js` | Shooting stars |
+| `site/js/sky.js`, `colour.js` | Sky colours: progress, seasons, contrast |
+| `site/js/dailies.js`, `icons.js`, `quotes.js`, `constellations.js`, `greeting.js` | Content |
+| `site/sw.js`, `site/manifest.webmanifest` | Service worker and web app manifest |
+| `tests/` | Node tests; `tests/browser/` holds the Playwright tests |
 
-The five early design prototypes are kept under the git tag [`prototypes`](https://github.com/MorrisMorrison/dailies/tree/prototypes/designs).
+Early design prototypes are kept under the git tag [`prototypes`](https://github.com/MorrisMorrison/dailies/tree/prototypes/designs).
 
-## Adding things
+## Conventions
 
-- **An icon:** add one entry to `ICONS` in `site/js/icons.js`. It appears in the picker automatically.
-- **A quote:** add it to `site/js/quotes.js` with the collections it belongs to, but only if it is in the public domain in both the US and the EU, fits the idea of dailies, and you have checked it word for word against the original text. Keep any one author at no more than half of a collection, so they never come up two days running.
-- **A file under `site/`:** list it in `ASSETS` in `site/sw.js` and bump `CACHE`. A test fails if you forget.
-- **Any change to a script or stylesheet:** bump `CACHE` in `site/sw.js` and set the same number in every `?v=` in `site/index.html` (the stylesheets, the entry script and the import map). That way a page never mixes files from two releases out of a cache. A new module also needs a line in the import map. Tests check all of this.
+- **Releases:** any change under `site/` bumps `CACHE` in `site/sw.js`, and every `?v=` in `site/index.html` (stylesheets, entry script, import map) gets the same number. New files go into `ASSETS`; new modules into the import map. Tests check all of this.
+- **Icons:** add an entry to `ICONS` in `site/js/icons.js`; it appears in the picker.
+- **Quotes:** add to `site/js/quotes.js` with their collections. Every quote must:
+  - be public domain in both the US and the EU;
+  - fit the idea of the dailies;
+  - be checked word for word against its source.
+
+  No author may have more than half of a collection.
+- **Tests:** new logic gets a Node test, and new page behaviour a browser test.
 
 ## License
 
