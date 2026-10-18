@@ -1,7 +1,8 @@
 # Dailies
 
-[![Deploy to GitHub Pages](https://github.com/MorrisMorrison/dailies/actions/workflows/pages.yml/badge.svg)](https://github.com/MorrisMorrison/dailies/actions/workflows/pages.yml)
+[![Deploy](https://github.com/MorrisMorrison/dailies/actions/workflows/deploy.yml/badge.svg)](https://github.com/MorrisMorrison/dailies/actions/workflows/deploy.yml)
 [![Tests](https://github.com/MorrisMorrison/dailies/actions/workflows/tests.yml/badge.svg)](https://github.com/MorrisMorrison/dailies/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/MorrisMorrison/dailies/graph/badge.svg)](https://codecov.io/gh/MorrisMorrison/dailies)
 
 A tiny website for the small things that keep you well: get outside, move, hydrate, eat well, rest, connect.
 
@@ -39,7 +40,7 @@ npx serve site
 npm test
 ```
 
-Uses Node's built-in test runner (Node 22 or later) and installs nothing. These tests cover the logic: state, content rules, sky colours, the geometry of the shooting stars, and the published files. They run on every pull request, and again before each deploy.
+Uses Node's built-in test runner (Node 22 or later) and installs nothing. These tests cover the logic: state, content rules, sky colours, the geometry of the shooting stars, and the published files. They run on every pull request.
 
 ```sh
 npm install
@@ -57,11 +58,13 @@ The browser tests check the page itself in WebKit (iPhone) and Chromium (Android
 
 They use [Playwright](https://playwright.dev), a dev-only dependency: the site itself has none. They run on every pull request.
 
+Every push to `main` runs both suites before anything is published: the **Deploy** workflow calls the Tests workflow and publishes `site/` to GitHub Pages only if every test passed. Coverage of `site/js/` goes to [Codecov](https://codecov.io/gh/MorrisMorrison/dailies). It's measured by Node's built-in coverage for the Node tests and by Chromium for the browser tests (WebKit can't measure it); `npm run coverage:unit` and `COVERAGE=1 npm run test:browser && npm run coverage:browser` produce the reports locally.
+
 ## Layout
 
 | Path | What it is |
 |---|---|
-| `site/` | The website, exactly as it is published. Every push to `main` deploys it to GitHub Pages, served through Cloudflare at [dailies.health](https://dailies.health/). |
+| `site/` | The website, exactly as it is published. Every push to `main` deploys it to GitHub Pages once all tests pass, served through Cloudflare at [dailies.health](https://dailies.health/). |
 | `site/index.html` | The page and the Edit dialog |
 | `site/css/` | `style.css` for the page, `editor.css` for the Edit dialog |
 | `site/js/app.js` | Draws the page: sky, sun, cards, quote, Your sky |

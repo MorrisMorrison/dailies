@@ -1,7 +1,7 @@
 // Shared set-up for the browser tests: real WebKit (iPhone) and Chromium (Android, desktop), with the
 // site served straight from disk at https://dailies.local and a seeded state and clock.
 import { chromium, webkit, devices } from 'playwright';
-import { readFile } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -35,6 +35,31 @@ export async function browserFor(platform) {
 export async function closeAll() {
   for (const b of Object.values(browsers)) await (await b).close();
   for (const key of Object.keys(browsers)) delete browsers[key];
+  await saveCoverage();
+}
+
+// ---- Coverage (COVERAGE=1): Chromium reports which parts of the site's scripts ran (WebKit can't).
+// Each test file writes its raw V8 coverage to coverage/browser-raw/; coverage-report.js turns them
+// into one lcov report.
+const COVERAGE = Boolean(process.env.COVERAGE);
+const collected = [];
+
+async function trackCoverage(platform, page, context) {
+  if (!COVERAGE || platform === 'iphone') return;
+  await page.coverage.startJSCoverage({ resetOnNavigation: false });
+  const close = context.close.bind(context);
+  context.close = async (...args) => {
+    const entries = await page.coverage.stopJSCoverage();
+    collected.push(...entries.filter((e) => /^https:\/\/dailies\.local\/js\//.test(e.url)));
+    return close(...args);
+  };
+}
+
+async function saveCoverage() {
+  if (!COVERAGE || !collected.length) return;
+  const dir = fileURLToPath(new URL('../../coverage/browser-raw/', import.meta.url));
+  await mkdir(dir, { recursive: true });
+  await writeFile(path.join(dir, `${process.pid}-${Date.now()}.json`), JSON.stringify(collected.splice(0)));
 }
 
 const pad = (n) => String(n).padStart(2, '0');
@@ -80,6 +105,7 @@ export async function open(platform, {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.clock.setFixedTime(date);
+  await trackCoverage(platform, page, context);
   await page.goto('https://dailies.local/');
   await page.waitForSelector('.card');
   return { page, context, errors };

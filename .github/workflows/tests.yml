@@ -1,9 +1,13 @@
 name: Tests
 
+# Runs on pull requests, and on main as the first step of Deploy (which calls it), so nothing is
+# published before both jobs pass.
 on:
   pull_request:
-  push:
-    branches: [main]
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        required: false
 
 permissions:
   contents: read
@@ -16,10 +20,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm test
+      # Node only, nothing installed; with Node's built-in coverage of site/js/.
+      - run: npm run coverage:unit
+      - uses: codecov/codecov-action@v5
+        with:
+          files: coverage/unit.lcov
+          flags: unit
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
 
   # The page in real browsers: WebKit (iPhone) and Chromium (Android, desktop). Playwright is a
-  # dev-only dependency; the site itself has none.
+  # dev-only dependency; the site itself has none. Chromium also reports coverage (WebKit can't).
   browser:
     runs-on: ubuntu-latest
     steps:
@@ -31,3 +42,12 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps webkit chromium
       - run: npm run test:browser
+        env:
+          COVERAGE: '1'
+      - run: npm run coverage:browser
+      - uses: codecov/codecov-action@v5
+        with:
+          files: coverage/browser/lcov.info
+          flags: browser
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
