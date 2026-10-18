@@ -113,7 +113,7 @@ function paint() {
   const progress = store.progress();
   const finished = progress.total > 0 && progress.done === progress.total;
   paintCelebration(finished);
-  const quote = quoteFor(store.today());
+  const quote = quoteFor(store.today(), store.quoteCollections());
   paintCards();
   paintSky(progress.ratio);
   paintSun(progress.ratio);

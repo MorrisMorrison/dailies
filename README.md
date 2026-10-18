@@ -23,7 +23,7 @@ Six are on by default, and more can be switched on under **Edit**. You can also 
 |---|---|
 | Get outside · Move · Hydrate · Eat well · Rest · Connect | Breathe · Unplug · Create · Learn · Tidy · Be grateful · Play · Be kind |
 
-Finish all of them and a few shooting stars cross the sky, the last one staying as a new star. You also get a **quote of the day**: 36 public-domain lines, each checked against its original text, with no repeats until every one has shown. Each finished day also lights a star in **Your sky**. The stars fill real constellations, from Cassiopeia and the Big Dipper to Orion and Pegasus. Only the dates of finished days are kept, on your device.
+Finish all of them and a few shooting stars cross the sky, the last one staying as a new star. You also get a **quote of the day** from the collections you pick under **Edit**: Classic (a bit of everything), Nature, Stoics, Poetry or Storybooks. Every line is public domain and checked against its original text, with no repeats until every one has shown. Each finished day also lights a star in **Your sky**. The stars fill real constellations, from Cassiopeia and the Big Dipper to Orion and Pegasus. Only the dates of finished days are kept, on your device.
 
 ## Run it locally
 
@@ -64,7 +64,7 @@ The five early design prototypes are kept under the git tag [`prototypes`](https
 ## Adding things
 
 - **An icon:** add one entry to `ICONS` in `site/js/icons.js`. It appears in the picker automatically.
-- **A quote:** add it to `site/js/quotes.js`, but only if it is in the public domain, fits the idea of dailies, and you have checked it word for word against the original text.
+- **A quote:** add it to `site/js/quotes.js` with the collections it belongs to, but only if it is in the public domain in both the US and the EU, fits the idea of dailies, and you have checked it word for word against the original text. Keep any one author at no more than half of a collection, so they never come up two days running.
 - **A file under `site/`:** list it in `ASSETS` in `site/sw.js` and bump `CACHE`. A test fails if you forget.
 
 ## License

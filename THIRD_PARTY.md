@@ -20,7 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 
 ## Quotes
 
-The quotes of the day are in the public domain: the authors died long ago, and the translations (George Long, Richard M. Gummere, James Legge) were published before 1929. Each one was checked word for word against its original text.
+The quotes of the day are in the public domain in both the US and the EU: the works were published before 1931, and their authors and translators (George Long, Aubrey Stewart, James Legge among them) died more than 70 years ago. Each one was checked word for word against its original text, from Project Gutenberg editions.
 
 ## Font
 

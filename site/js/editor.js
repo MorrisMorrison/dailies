@@ -1,8 +1,10 @@
-// The Edit dialog: switch dailies on and off, add your own with a name and an icon, remove them again.
+// The Edit dialog: switch dailies on and off, add your own with a name and an icon, remove them again,
+// and choose the quote collections.
 // The dialog frame lives in index.html; this module renders the list inside it.
 import { $, esc } from './html.js';
 import { ICONS, DEFAULT_ICON, icon } from './icons.js';
 import { MAX_CUSTOM, MAX_LABEL, cleanLabel } from './dailies.js';
+import { COLLECTIONS } from './quotes.js';
 import * as store from './store.js';
 
 const dialog = $('editor');
@@ -43,10 +45,23 @@ function addForm() {
   </li>`;
 }
 
+// The quote collections, at the end of the list: one row each, with a few names that say what's in it.
+function quotesSection() {
+  const chosen = store.quoteCollections();
+  const rows = COLLECTIONS.map(({ id, name, who }) => `<li><label class="editor-pick editor-quote">
+      <input type="checkbox" name="editor-quotes" value="${id}"${chosen.includes(id) ? ' checked' : ''}>
+      <span><strong>${name}</strong><small>${who}</small></span></label></li>`);
+  return `<li class="editor-add editor-quotes">
+    <h3>Quote of the day</h3>
+    <small>Pick one or more. Shown once all your dailies are done.</small>
+    <ul>${rows.join('')}</ul>
+  </li>`;
+}
+
 /** Redraws the list, keeping the scroll position. */
 function render() {
   const scroll = list.scrollTop;
-  list.innerHTML = store.allDailies().map(row).join('') + addForm();
+  list.innerHTML = store.allDailies().map(row).join('') + addForm() + quotesSection();
   list.scrollTop = scroll;
 }
 
@@ -95,8 +110,14 @@ list.addEventListener('change', (event) => {
     pickedIcon = input.value;
     return;
   }
+  if (input.name === 'editor-quotes') {
+    const chosen = [...list.querySelectorAll('input[name="editor-quotes"]:checked')].map((box) => box.value);
+    if (chosen.length) store.setQuoteCollections(chosen);
+    else input.checked = true; // keep at least one collection
+    return;
+  }
   if (input.type !== 'checkbox') return;
-  const enabled = [...list.querySelectorAll('.editor-pick input:checked')].map((box) => box.value);
+  const enabled = [...list.querySelectorAll('.editor-row .editor-pick input:checked')].map((box) => box.value);
   if (enabled.length) store.setEnabled(enabled);
   else input.checked = true; // keep at least one switched on
 });
