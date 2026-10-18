@@ -128,3 +128,14 @@ test('quote collections: Classic by default, cleaned on load, at least one kept'
   store.setQuoteCollections(['poetry']);
   assert.deepEqual(stored().quotes, ['poetry']);
 });
+
+test('the quote kept on finishing stays for today only', () => {
+  assert.equal(store.keptQuote(), null);
+  store.keepQuote('A quote.');
+  assert.equal(store.keptQuote(), 'A quote.');
+  assert.equal(stored().keptQuote, 'A quote.');
+  store.setQuoteCollections(['poetry']);
+  assert.equal(store.keptQuote(), 'A quote.', 'changing collections keeps it');
+  useStored({ ...stored(), day: '2020-01-01' });
+  assert.equal(store.keptQuote(), null, 'a new day drops it');
+});

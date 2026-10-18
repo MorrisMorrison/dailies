@@ -23,7 +23,7 @@ Six are on by default, and more can be switched on under **Edit**. You can also 
 |---|---|
 | Get outside · Move · Hydrate · Eat well · Rest · Connect | Breathe · Unplug · Create · Learn · Tidy · Be grateful · Play · Be kind |
 
-Finish all of them and a few shooting stars cross the sky, the last one staying as a new star. You also get a **quote of the day** from the collections you pick under **Edit**: Classic (a bit of everything), Nature, Stoics, Poetry or Storybooks. Every line is public domain and checked against its original text, with no repeats until every one has shown. Each finished day also lights a star in **Your sky**. The stars fill real constellations, from Cassiopeia and the Big Dipper to Orion and Pegasus. Only the dates of finished days are kept, on your device.
+Finish all of them and the page glides back to the sky, where a few shooting stars cross it, the last one staying as a new star (on Android, the phone gives a short buzz too). You also get a **quote of the day**, which stays until midnight, from the collections you pick under **Edit**: Classic (a bit of everything), Nature, Stoics, Poetry or Storybooks. Every line is public domain and checked against its original text, with no repeats until every one has shown. Each finished day also lights a star in **Your sky**. The stars fill real constellations, from Cassiopeia and the Big Dipper to Orion and Pegasus. Only the dates of finished days are kept, on your device.
 
 ## Run it locally
 

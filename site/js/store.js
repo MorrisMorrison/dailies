@@ -65,6 +65,8 @@ export function parse(saved, today = dayKey()) {
     custom,
     history: history.slice(-MAX_HISTORY),
     quotes: quotes.length ? quotes : [...DEFAULT_COLLECTIONS],
+    // The quote shown when today was finished; it belongs to today only.
+    keptQuote: s.day === today && typeof s.keptQuote === 'string' ? s.keptQuote.slice(0, 500) : null,
   };
 }
 
@@ -131,6 +133,8 @@ export const today = () => state.day;
 export const customCount = () => state.custom.length;
 /** The chosen quote collections (ids from quotes.js). */
 export const quoteCollections = () => [...state.quotes];
+/** Today's quote, if the day was finished and one was kept; otherwise null. */
+export const keptQuote = () => state.keptQuote;
 
 /** Days on which every daily got done, today included once it is. */
 export const finishedDays = () => state.history.length;
@@ -154,6 +158,14 @@ export function toggle(id) {
 /** Switches on exactly these dailies. At least one always stays on. */
 export function setEnabled(ids) {
   if (ids.length) commit({ ...state, enabled: ids });
+}
+
+/** Remembers today's quote once the day is finished, so it stays until midnight. Saved quietly: it
+ * changes nothing on screen, so listeners aren't called. */
+export function keepQuote(text) {
+  if (state.keptQuote === text) return;
+  state = { ...state, keptQuote: text };
+  write(state);
 }
 
 /** Chooses the quote collections. At least one always stays chosen. */
