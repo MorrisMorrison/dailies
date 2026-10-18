@@ -8,6 +8,7 @@ A tiny website for the small things that keep you well: get outside, move, hydra
 **[dailies.health](https://dailies.health/)**
 
 - **No accounts, no server, no tracking.** Everything is stored in your browser (`localStorage`) and never leaves your device.
+- **Visits are only counted, never tracked.** The site is served through Cloudflare, which counts requests on its side (how many visits, roughly how many people). There are no analytics scripts or cookies, and nothing is stored on your device for it.
 - **Fresh every morning.** Ticks reset at local midnight.
 - **Vanilla HTML, CSS and JavaScript.** No framework, no dependencies, no build step.
 - **Works offline** and installs to your home screen like an app. On phones, people who come back after a finished day get a short note on how to do that in their browser (an Install button on Android, the Share menu on iPhone and iPad, "open it in your browser" inside apps like Instagram). It can be dismissed for good.
@@ -44,7 +45,7 @@ Uses Node's built-in test runner (Node 22 or later) and installs nothing. The te
 
 | Path | What it is |
 |---|---|
-| `site/` | The website, exactly as it is published. Every push to `main` deploys it to GitHub Pages at [dailies.health](https://dailies.health/). |
+| `site/` | The website, exactly as it is published. Every push to `main` deploys it to GitHub Pages, served through Cloudflare at [dailies.health](https://dailies.health/). |
 | `site/index.html` | The page and the Edit dialog |
 | `site/css/` | `style.css` for the page, `editor.css` for the Edit dialog |
 | `site/js/app.js` | Draws the page: sky, sun, cards, quote, Your sky |
