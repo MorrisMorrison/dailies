@@ -1,25 +1,17 @@
 // The published folder: every file the page needs is cached for offline use, and every file it links exists.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, readdirSync, existsSync } from 'node:fs';
-import { join, relative } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { readFileSync, existsSync } from 'node:fs';
+import { join } from 'node:path';
+import { SITE, NOT_CACHED, siteFiles } from '../scripts/site-files.js';
 
-const SITE = fileURLToPath(new URL('../site/', import.meta.url));
 const read = (file) => readFileSync(join(SITE, file), 'utf8');
+const filesIn = () => siteFiles();
 
-const filesIn = (dir) => readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
-  entry.isDirectory() ? filesIn(join(dir, entry.name)) : [relative(SITE, join(dir, entry.name)).replaceAll('\\', '/')]);
-
-// Files the service worker does not need to cache: itself, the font licence, the extended-Latin
-// font subset (only downloaded when a name uses those characters), and the images only link previews
-// and install screens fetch.
-const NOT_CACHED = new Set(['sw.js', 'fonts/OFL.txt', 'fonts/manrope-latin-ext.woff2',
-  'img/og.png', 'img/screenshot-day.png', 'img/screenshot-done.png']);
-
+// `npm run release` keeps sw.js and index.html in step with the files; these tests catch a forgotten run.
 test('the service worker caches every file of the site', () => {
   const assets = [...read('sw.js').matchAll(/'\.\/([^']*)'/g)].map((m) => m[1]).filter(Boolean);
-  const expected = filesIn(SITE).filter((file) => !NOT_CACHED.has(file));
+  const expected = filesIn().filter((file) => !NOT_CACHED.has(file));
   assert.deepEqual([...assets].sort(), [...expected].sort());
 });
 
@@ -43,14 +35,14 @@ test('every stylesheet and script in index.html carries the release version from
 });
 
 test('the import map sends every module to its versioned URL', () => {
-  const modules = filesIn(SITE).filter((f) => /^js\/.*\.js$/.test(f));
+  const modules = filesIn().filter((f) => /^js\/.*\.js$/.test(f));
   const map = importMap();
   assert.deepEqual(Object.keys(map).sort(), modules.map((f) => `./${f}`).sort(), 'one entry per module');
   for (const [from, to] of Object.entries(map)) assert.equal(to, `${from}?v=${VERSION}`, from);
 });
 
 test('modules import each other by plain relative paths, which the import map can version', () => {
-  for (const file of filesIn(SITE).filter((f) => /^js\/.*\.js$/.test(f))) {
+  for (const file of filesIn().filter((f) => /^js\/.*\.js$/.test(f))) {
     for (const [, path] of read(file).matchAll(/^import [^'"]*['"]([^'"]+)['"]/gm)) {
       assert.match(path, /^\.\/[\w-]+\.js$/, `${file} imports ${path}`);
     }
