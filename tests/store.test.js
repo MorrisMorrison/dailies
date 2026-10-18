@@ -118,3 +118,13 @@ test('counts finished days before today separately', () => {
   assert.equal(store.finishedDays(), 2);
   assert.equal(store.earlierFinishedDays(), 1);
 });
+
+test('quote collections: Classic by default, cleaned on load, at least one kept', () => {
+  assert.deepEqual(store.quoteCollections(), ['classic']);
+  useStored({ day: today, quotes: ['nature', 'nope', 'nature', 'stories'] });
+  assert.deepEqual(store.quoteCollections(), ['nature', 'stories']);
+  store.setQuoteCollections([]);
+  assert.deepEqual(store.quoteCollections(), ['nature', 'stories'], 'an empty choice is ignored');
+  store.setQuoteCollections(['poetry']);
+  assert.deepEqual(stored().quotes, ['poetry']);
+});

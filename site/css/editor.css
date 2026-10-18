@@ -82,6 +82,12 @@ html:has(.editor[open]) { overflow: hidden; } /* the page behind stays put while
 .editor-icons label:has(input:checked) { border-color: var(--deep); background: var(--line); color: var(--ink); }
 .editor-icons label:has(input:focus-visible) { outline: 2px solid var(--deep); outline-offset: 2px; }
 
+/* ---- Quote of the day: one row per collection, like the dailies but without an icon */
+
+.editor-quotes > small { display: block; margin: -6px 0 6px; }
+.editor-quotes ul { list-style: none; margin: 0 -10px 6px; padding: 0; }
+.editor-quote { grid-template-columns: 20px 1fr; }
+
 /* Short screens (phones in landscape): give the list the room. */
 @media (prefers-reduced-motion: reduce) {
   .editor-row.is-new { animation: none; }

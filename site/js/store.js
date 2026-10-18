@@ -1,8 +1,9 @@
 // On-device state: which dailies are switched on, today's ticks, the dailies people added themselves,
-// and the dates of finished days. Everything lives in localStorage under one key and never leaves the
-// device. Ticks reset at local midnight; everything else carries over.
+// the dates of finished days, and the chosen quote collections. Everything lives in localStorage under
+// one key and never leaves the device. Ticks reset at local midnight; everything else carries over.
 import { BUILTIN, DEFAULT_ENABLED, MAX_CUSTOM, cleanLabel } from './dailies.js';
 import { DEFAULT_ICON, isIcon } from './icons.js';
+import { DEFAULT_COLLECTIONS, isCollection } from './quotes.js';
 
 const KEY = 'dailies:v1';
 const MAX_HISTORY = 3660; // ten years of finished days
@@ -56,12 +57,14 @@ export function parse(saved, today = dayKey()) {
   const onlyKnown = (ids) => (Array.isArray(ids) ? ids.filter((id) => known.has(id)) : []);
   const enabled = onlyKnown(s.enabled);
   const history = Array.isArray(s.history) ? [...new Set(s.history.filter(isDay))].sort() : [];
+  const quotes = Array.isArray(s.quotes) ? [...new Set(s.quotes.filter(isCollection))] : [];
   return {
     day: today,
     enabled: enabled.length ? enabled : [...DEFAULT_ENABLED],
     done: s.day === today ? onlyKnown(s.done) : [],
     custom,
     history: history.slice(-MAX_HISTORY),
+    quotes: quotes.length ? quotes : [...DEFAULT_COLLECTIONS],
   };
 }
 
@@ -126,6 +129,8 @@ export const isEnabled = (id) => state.enabled.includes(id);
 export const isDone = (id) => state.done.includes(id);
 export const today = () => state.day;
 export const customCount = () => state.custom.length;
+/** The chosen quote collections (ids from quotes.js). */
+export const quoteCollections = () => [...state.quotes];
 
 /** Days on which every daily got done, today included once it is. */
 export const finishedDays = () => state.history.length;
@@ -149,6 +154,12 @@ export function toggle(id) {
 /** Switches on exactly these dailies. At least one always stays on. */
 export function setEnabled(ids) {
   if (ids.length) commit({ ...state, enabled: ids });
+}
+
+/** Chooses the quote collections. At least one always stays chosen. */
+export function setQuoteCollections(ids) {
+  const quotes = ids.filter(isCollection);
+  if (quotes.length) commit({ ...state, quotes });
 }
 
 export function resetEnabled() {

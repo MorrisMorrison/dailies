@@ -1,7 +1,7 @@
 // Content rules: quotes rotate without repeats, constellations fill up correctly, icons and dailies line up.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { QUOTES, quoteFor } from '../site/js/quotes.js';
+import { QUOTES, COLLECTIONS, DEFAULT_COLLECTIONS, isCollection, quoteFor, quotesIn } from '../site/js/quotes.js';
 import { CONSTELLATIONS, CYCLE, skyFor } from '../site/js/constellations.js';
 import { ICONS, isIcon } from '../site/js/icons.js';
 import { BUILTIN } from '../site/js/dailies.js';
@@ -10,21 +10,40 @@ import { greeting, dayLine } from '../site/js/greeting.js';
 const day = (offset) => new Date(Date.UTC(2026, 0, 1) + offset * 864e5).toISOString().slice(0, 10);
 const author = (quote) => quote.by.split(',')[0];
 
-test('every quote has text, an author and a source', () => {
-  for (const q of QUOTES) assert.ok(q.text && q.by && q.from, JSON.stringify(q));
+// Every choice someone can make in Edit: each non-empty combination of collections.
+const CHOICES = [];
+for (let mask = 1; mask < 1 << COLLECTIONS.length; mask++) CHOICES.push(COLLECTIONS.filter((_, i) => mask & (1 << i)).map((c) => c.id));
+
+test('every quote has text, an author, a source and at least one collection', () => {
+  for (const q of QUOTES) assert.ok(q.text && q.by && q.from && q.sets.length && q.sets.every(isCollection), JSON.stringify(q));
   assert.equal(new Set(QUOTES.map((q) => q.text)).size, QUOTES.length, 'no duplicates');
 });
 
-test('no quote repeats until every quote has shown', () => {
-  for (let start = 0; start < 400; start++) {
-    const shown = new Set();
-    for (let i = 0; i < QUOTES.length; i++) shown.add(quoteFor(day(start + i)).text);
-    assert.equal(shown.size, QUOTES.length, `window starting ${day(start)}`);
+test('every collection has enough quotes for weeks without a repeat', () => {
+  for (const { id } of COLLECTIONS) assert.ok(quotesIn([id]).length >= 20, `${id}: ${quotesIn([id]).length}`);
+  assert.equal(quotesIn(DEFAULT_COLLECTIONS).length, 36, 'Classic keeps its 36');
+});
+
+test('no quote repeats until every quote of the chosen collections has shown', () => {
+  for (const choice of CHOICES) {
+    const size = quotesIn(choice).length;
+    for (let start = 0; start < 60; start++) {
+      const shown = new Set();
+      for (let i = 0; i < size; i++) shown.add(quoteFor(day(start + i), choice).text);
+      assert.equal(shown.size, size, `${choice} from ${day(start)}`);
+    }
   }
 });
 
-test('the same author never comes up two days running', () => {
-  for (let i = 0; i < 400; i++) assert.notEqual(author(quoteFor(day(i))), author(quoteFor(day(i + 1))), day(i));
+test('the same author never comes up two days running, whatever is chosen', () => {
+  for (const choice of CHOICES) {
+    for (let i = 0; i < 200; i++) assert.notEqual(author(quoteFor(day(i), choice)), author(quoteFor(day(i + 1), choice)), `${choice} on ${day(i)}`);
+  }
+});
+
+test('unknown or no collections fall back to Classic', () => {
+  assert.deepEqual(quotesIn([]), quotesIn(DEFAULT_COLLECTIONS));
+  assert.deepEqual(quotesIn(['nope']), quotesIn(DEFAULT_COLLECTIONS));
 });
 
 test('constellations fill one star at a time and wrap around', () => {
