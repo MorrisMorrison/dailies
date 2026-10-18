@@ -9,6 +9,7 @@ import { skyFor } from './constellations.js';
 import { COLOURS, seasonalSky, hemisphereOf } from './sky.js';
 import { openEditor } from './editor.js';
 import { setupSharing } from './share.js';
+import { celebrate, clearSky } from './celebrate.js';
 import * as store from './store.js';
 
 const hemisphere = hemisphereOf(Intl.DateTimeFormat().resolvedOptions().timeZone);
@@ -98,9 +99,20 @@ function paintYourSky() {
     : `Every day you finish lights a star. ${stars.length - lit} more to complete ${name}.`;
 }
 
+// Shooting stars each time the day becomes finished during this visit (not when the page opens on a
+// finished day). Unticking clears the sky again.
+let wasFinished = null;
+
+function paintCelebration(finished) {
+  if (finished && wasFinished === false) celebrate();
+  if (!finished && wasFinished) clearSky();
+  wasFinished = finished;
+}
+
 function paint() {
   const progress = store.progress();
   const finished = progress.total > 0 && progress.done === progress.total;
+  paintCelebration(finished);
   const quote = quoteFor(store.today());
   paintCards();
   paintSky(progress.ratio);

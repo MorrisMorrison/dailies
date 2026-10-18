@@ -84,6 +84,18 @@ body::before {
 }
 .finished .starfield { opacity: .8; }
 
+/* Shooting stars when the day gets finished (js/celebrate.js). A head with a glow and a fading tail. */
+.meteors { position: fixed; inset: 0 0 auto; z-index: -1; pointer-events: none; overflow: hidden; }
+.meteor {
+  position: absolute; border-radius: 2px; transform-origin: 0 50%; opacity: 0;
+  background: linear-gradient(to right, #fff 0%, rgba(255, 255, 255, .55) 12%, rgba(255, 255, 255, 0) 100%);
+}
+.meteor::before {
+  content: ''; position: absolute; left: -2px; top: 50%; width: 6px; height: 6px; margin-top: -3px; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 8px 2px rgba(255, 255, 255, .8);
+}
+.wish { position: absolute; width: 3px; height: 3px; margin: -1.5px; border-radius: 50%; background: #fff; opacity: 0; box-shadow: 0 0 6px 2px rgba(255, 255, 255, .7); }
+
 .page { overflow-x: clip; } /* the sun's halo may reach past the edges */
 main {
   max-width: 520px; margin: 0 auto;
