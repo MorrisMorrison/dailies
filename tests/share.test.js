@@ -1,7 +1,7 @@
 // Who gets the home-screen card, and what it says.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { platformOf, shouldOffer, installText } from '../site/js/share.js';
+import { platformOf, shouldOffer, offersButton, sheetSteps, installText } from '../site/js/share.js';
 
 const UA = {
   iphone: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1',
@@ -41,4 +41,17 @@ test('explains the way in each browser offers', () => {
   assert.match(installText('android', true), /^Install Dailies/);
   assert.match(installText('android', false), /menu/);
   assert.match(installText('inapp', false), /Safari or Chrome/);
+});
+
+test('shows the home-screen button on phones from the first visit, until Dailies runs from the home screen', () => {
+  for (const platform of ['ios', 'android', 'inapp']) assert.equal(offersButton({ platform, standalone: false }), true, platform);
+  assert.equal(offersButton({ platform: 'desktop', standalone: false }), false);
+  assert.equal(offersButton({ platform: 'ios', standalone: true }), false);
+});
+
+test('the sheet gives three steps in the words of each browser', () => {
+  for (const platform of ['ios', 'android', 'inapp']) assert.equal(sheetSteps(platform).length, 3, platform);
+  assert.match(sheetSteps('ios').join(' '), /Add to Home Screen/);
+  assert.match(sheetSteps('android').join(' '), /Install app/);
+  assert.match(sheetSteps('inapp').join(' '), /Open in browser/);
 });

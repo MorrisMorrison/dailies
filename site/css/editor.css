@@ -1,4 +1,4 @@
-/* The Edit dialog: a list of every daily with a checkbox, and a form to add your own. */
+/* The dialogs: Edit (a list of every daily with a checkbox, and a form to add your own) and the home-screen sheet. */
 
 .editor {
   border: 0; padding: 0; border-radius: 24px;
@@ -26,6 +26,22 @@ html:has(.editor[open]) { overflow: hidden; } /* the page behind stays put while
 .editor .icon { width: 30px; height: 30px; }
 .editor strong { display: block; font-size: 15px; }
 .editor small { display: block; color: var(--ink-muted); font-size: 13px; line-height: 1.35; }
+
+/* ---- The home-screen sheet: the steps for browsers without an install prompt */
+
+.sheet {
+  border: 0; padding: 22px 24px 20px; border-radius: 24px;
+  background: var(--paper); color: var(--ink); font-family: var(--font);
+  width: min(400px, calc(100vw - 32px));
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+}
+.sheet::backdrop { background: rgba(10, 12, 20, .6); }
+.sheet form { margin: 0; }
+.sheet h2 { margin: 0; font-size: 21px; letter-spacing: -.01em; }
+.sheet-steps { margin: 16px 0 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: 14px; }
+.sheet-steps li { counter-increment: step; display: grid; grid-template-columns: 30px 1fr; gap: 12px; align-items: start; font-size: 15px; line-height: 1.45; }
+.sheet-steps li::before { content: counter(step); width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--deep); color: var(--paper); font-size: 14px; font-weight: 700; }
+.sheet footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
 
 /* ---- Buttons */
 
