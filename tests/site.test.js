@@ -33,7 +33,7 @@ test('everything index.html links to exists', () => {
 test('every id the scripts look up exists in index.html', () => {
   const html = read('index.html');
   const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1]));
-  for (const file of ['js/app.js', 'js/editor.js', 'js/share.js']) {
+  for (const file of ['js/app.js', 'js/editor.js', 'js/share.js', 'js/celebrate.js']) {
     for (const [, id] of read(file).matchAll(/\$\('([^']+)'\)/g)) {
       // ids inside markup the scripts build themselves are fine
       if (read(file).includes(`id="${id}"`)) continue;

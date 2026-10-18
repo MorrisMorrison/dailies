@@ -23,7 +23,7 @@ Six are on by default, and more can be switched on under **Edit**. You can also 
 |---|---|
 | Get outside · Move · Hydrate · Eat well · Rest · Connect | Breathe · Unplug · Create · Learn · Tidy · Be grateful · Play · Be kind |
 
-Finish all of them and you get a **quote of the day**: 36 public-domain lines, each checked against its original text, with no repeats until every one has shown. Each finished day also lights a star in **Your sky**. The stars fill real constellations, from Cassiopeia and the Big Dipper to Orion and Pegasus. Only the dates of finished days are kept, on your device.
+Finish all of them and a few shooting stars cross the sky, the last one staying as a new star. You also get a **quote of the day**: 36 public-domain lines, each checked against its original text, with no repeats until every one has shown. Each finished day also lights a star in **Your sky**. The stars fill real constellations, from Cassiopeia and the Big Dipper to Orion and Pegasus. Only the dates of finished days are kept, on your device.
 
 ## Run it locally
 
@@ -51,6 +51,7 @@ Uses Node's built-in test runner (Node 22 or later) and installs nothing. The te
 | `site/js/app.js` | Draws the page: sky, sun, cards, quote, Your sky |
 | `site/js/sky.js`, `colour.js` | The sky's colours: progress, seasons (hemisphere guessed from the timezone) and a contrast guard |
 | `site/js/editor.js` | The Edit dialog |
+| `site/js/celebrate.js` | The shooting stars when the day is finished |
 | `site/js/share.js` | The home-screen button, sheet and reminder, and the Share button |
 | `site/js/store.js` | On-device state: what's switched on, today's ticks, your own dailies, finished days |
 | `site/js/dailies.js`, `icons.js`, `quotes.js`, `constellations.js`, `greeting.js` | Content: the built-in dailies, icon shapes, quotes, star positions, the greeting wording |
