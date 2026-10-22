@@ -30,28 +30,28 @@
      page never mixes files from two releases out of a cache. This page itself is never cached, so it
      always names the current version. The import map does the same for the modules' own imports.
      `npm run release` updates them all, with CACHE; tests/site.test.js checks they agree. -->
-<link rel="stylesheet" href="css/style.css?v=14">
-<link rel="stylesheet" href="css/editor.css?v=14">
+<link rel="stylesheet" href="css/style.css?v=15">
+<link rel="stylesheet" href="css/editor.css?v=15">
 <script type="importmap">
 {
   "imports": {
-    "./js/app.js": "./js/app.js?v=14",
-    "./js/celebrate.js": "./js/celebrate.js?v=14",
-    "./js/colour.js": "./js/colour.js?v=14",
-    "./js/constellations.js": "./js/constellations.js?v=14",
-    "./js/dailies.js": "./js/dailies.js?v=14",
-    "./js/editor.js": "./js/editor.js?v=14",
-    "./js/greeting.js": "./js/greeting.js?v=14",
-    "./js/html.js": "./js/html.js?v=14",
-    "./js/icons.js": "./js/icons.js?v=14",
-    "./js/quotes.js": "./js/quotes.js?v=14",
-    "./js/share.js": "./js/share.js?v=14",
-    "./js/sky.js": "./js/sky.js?v=14",
-    "./js/store.js": "./js/store.js?v=14"
+    "./js/app.js": "./js/app.js?v=15",
+    "./js/celebrate.js": "./js/celebrate.js?v=15",
+    "./js/colour.js": "./js/colour.js?v=15",
+    "./js/constellations.js": "./js/constellations.js?v=15",
+    "./js/dailies.js": "./js/dailies.js?v=15",
+    "./js/editor.js": "./js/editor.js?v=15",
+    "./js/greeting.js": "./js/greeting.js?v=15",
+    "./js/html.js": "./js/html.js?v=15",
+    "./js/icons.js": "./js/icons.js?v=15",
+    "./js/quotes.js": "./js/quotes.js?v=15",
+    "./js/share.js": "./js/share.js?v=15",
+    "./js/sky.js": "./js/sky.js?v=15",
+    "./js/store.js": "./js/store.js?v=15"
   }
 }
 </script>
-<script type="module" src="js/app.js?v=14"></script>
+<script type="module" src="js/app.js?v=15"></script>
 </head>
 <body>
 <div class="starfield" aria-hidden="true"></div>
@@ -126,8 +126,8 @@
 <dialog class="editor" id="editor" tabindex="-1" aria-labelledby="editor-title">
   <form method="dialog">
     <header>
-      <h2 id="editor-title">Your dailies</h2>
-      <p>Choose what you want to show up for. Everything stays on this device and resets at midnight.</p>
+      <h2 id="editor-title">Make it yours</h2>
+      <p>Choose what you want to show up for. Your ticks start fresh every morning; your list stays as it is.</p>
     </header>
     <ul class="editor-list" id="editor-list"></ul>
     <p class="sr-only" id="editor-live" aria-live="polite"></p>
