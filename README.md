@@ -17,7 +17,7 @@ A small daily-habits checklist that runs entirely in the browser. Live at [daili
 - **Dailies:**
   - six on by default: get outside, move, hydrate, eat well, rest, connect;
   - eight optional ones;
-  - up to 10 custom ones (a name and an icon).
+  - up to 10 custom ones (a name, an icon and an optional note).
 - **State:** in `localStorage` only; no accounts, no server, no analytics. Ticks reset at local midnight.
 - **Progress:** shown as the sun on an arc. The sky colours follow it and shift with the season.
 - **When the day is finished:**
