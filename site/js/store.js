@@ -1,7 +1,7 @@
 // On-device state: which dailies are switched on, today's ticks, the dailies people added themselves,
 // the dates of finished days, and the chosen quote collections. Everything lives in localStorage under
 // one key and never leaves the device. Ticks reset at local midnight; everything else carries over.
-import { BUILTIN, DEFAULT_ENABLED, MAX_CUSTOM, cleanLabel } from './dailies.js';
+import { BUILTIN, DEFAULT_ENABLED, MAX_CUSTOM, cleanLabel, cleanNote } from './dailies.js';
 import { DEFAULT_ICON, isIcon } from './icons.js';
 import { DEFAULT_COLLECTIONS, isCollection } from './quotes.js';
 
@@ -39,12 +39,18 @@ function write(state) {
 
 const isDay = (value) => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value);
 
+// A note is optional: stored only when there is one.
+const withNote = (value) => {
+  const note = typeof value === 'string' ? cleanNote(value) : '';
+  return note ? { note } : {};
+};
+
 function cleanCustom(list) {
   if (!Array.isArray(list)) return [];
   const seen = new Set();
   return list
     .filter((c) => c && /^c-[a-z0-9]{4,24}$/.test(c.id) && !seen.has(c.id) && seen.add(c.id))
-    .map((c) => ({ id: c.id, label: cleanLabel(c.label), icon: isIcon(c.icon) ? c.icon : DEFAULT_ICON }))
+    .map((c) => ({ id: c.id, label: cleanLabel(c.label), icon: isIcon(c.icon) ? c.icon : DEFAULT_ICON, ...withNote(c.note) }))
     .filter((c) => c.label)
     .slice(0, MAX_CUSTOM);
 }
@@ -119,7 +125,8 @@ export function watch() {
 
 // ---- Reading.
 
-const asDaily = (custom) => ({ ...custom, hint: '', custom: true });
+// A daily of one's own shows its note, if it has one, where built-in dailies show their description.
+const asDaily = ({ note, ...custom }) => ({ ...custom, hint: note ?? '', custom: true });
 
 /** Every daily, built-in first, in a stable order. */
 export const allDailies = () => [...BUILTIN, ...state.custom.map(asDaily)];
@@ -186,6 +193,12 @@ export function addCustom(label, iconName) {
   const entry = { id, label: name, icon: isIcon(iconName) ? iconName : DEFAULT_ICON };
   commit({ ...state, custom: [...state.custom, entry], enabled: [...state.enabled, id] });
   return id;
+}
+
+/** Sets or changes the note of a daily of one's own; an empty note removes it. */
+export function setNote(id, text) {
+  const custom = state.custom.map(({ note, ...c }) => ({ ...c, ...withNote(c.id === id ? text : note) }));
+  commit({ ...state, custom });
 }
 
 export function removeCustom(id) {

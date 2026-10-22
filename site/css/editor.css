@@ -58,9 +58,18 @@ html:has(.editor[open]) { overflow: hidden; } /* the page behind stays put while
 .editor-row { display: flex; align-items: center; gap: 4px; border-radius: 12px; }
 .editor-pick { flex: 1; min-width: 0; display: grid; grid-template-columns: 20px 30px 1fr; gap: 12px; align-items: center; padding: 9px 12px; border-radius: 12px; cursor: pointer; }
 .editor-pick strong { overflow-wrap: anywhere; }
-.editor-pick input { accent-color: var(--deep); width: 18px; height: 18px; margin: 0; }
+.editor-pick > span { min-width: 0; } /* a grid cell, so the note field can take its full width */
+.editor-pick input[type="checkbox"] { accent-color: var(--deep); width: 18px; height: 18px; margin: 0; }
 .editor-remove { flex: none; width: 36px; height: 36px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--ink-muted); cursor: pointer; }
 .editor-remove svg { width: 18px; height: 18px; }
+
+/* The optional note under a daily of one's own (#46): looks like a description, or a quiet link
+   while there's none; tapping it turns it into a field. */
+.editor-note { display: block; max-width: 100%; margin: 0; padding: 2px 0; border: 0; background: none; font: inherit; font-size: 13px; line-height: 1.35; text-align: left; color: var(--ink-muted); cursor: text; overflow-wrap: anywhere; }
+.editor-note.is-empty { color: var(--deep); font-weight: 600; cursor: pointer; }
+.editor-note:focus-visible { outline: 2px solid var(--deep); outline-offset: 2px; border-radius: 4px; }
+.editor-note-input { display: block; width: 100%; margin-top: 4px; font: inherit; font-size: 16px; padding: 6px 10px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--ink); }
+.editor-note-input:focus { outline: 2px solid var(--deep); outline-offset: 1px; }
 
 /* A daily that was just added lights up briefly (#17). */
 .editor-row.is-new { animation: just-added 1.6s ease-out; }

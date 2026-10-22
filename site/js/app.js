@@ -155,12 +155,12 @@ cards.addEventListener('click', (event) => {
 });
 $('edit').addEventListener('click', openEditor);
 
-// Rebuild the cards only when the set of dailies changes, so ticking one can animate.
-const cardIds = () => store.enabledDailies().map((d) => d.id).join();
-let shownIds = cardIds();
+// Rebuild the cards only when the set of dailies or a note changes, so ticking one can animate.
+const cardKey = () => JSON.stringify(store.enabledDailies().map((d) => [d.id, d.hint]));
+let shownKey = cardKey();
 store.subscribe(() => {
-  if (cardIds() !== shownIds) {
-    shownIds = cardIds();
+  if (cardKey() !== shownKey) {
+    shownKey = cardKey();
     renderCards();
   }
   paint();
