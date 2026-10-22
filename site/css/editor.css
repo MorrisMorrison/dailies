@@ -49,7 +49,11 @@ html:has(.editor[open]) { overflow: hidden; } /* the page behind stays put while
 .button-primary { background: var(--deep); border-color: var(--deep); color: var(--paper); font-weight: 600; }
 .button:disabled { opacity: .4; cursor: default; }
 
-/* ---- One row per daily */
+/* ---- One row per daily, under their own heading like the sections below */
+
+.editor-section h3, .editor-add h3 { margin: 0 0 10px; font-size: 15px; }
+.editor-section { padding: 12px 12px 0; }
+.editor-section h3 { margin-bottom: 4px; }
 
 .editor-row { display: flex; align-items: center; gap: 4px; border-radius: 12px; }
 .editor-pick { flex: 1; min-width: 0; display: grid; grid-template-columns: 20px 30px 1fr; gap: 12px; align-items: center; padding: 9px 12px; border-radius: 12px; cursor: pointer; }
@@ -69,7 +73,6 @@ html:has(.editor[open]) { overflow: hidden; } /* the page behind stays put while
 /* ---- Add your own */
 
 .editor-add { margin: 10px 2px 8px; padding: 16px 10px 4px; border-top: 1px solid var(--line); }
-.editor-add h3 { margin: 0 0 10px; font-size: 15px; }
 .editor-add-name { display: flex; gap: 8px; align-items: stretch; }
 .editor-add-name .button { flex: none; white-space: nowrap; min-width: 84px; }
 .editor-name { flex: 1; min-width: 0; font: inherit; font-size: 16px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--ink); }

@@ -61,7 +61,8 @@ function quotesSection() {
 /** Redraws the list, keeping the scroll position. */
 function render() {
   const scroll = list.scrollTop;
-  list.innerHTML = store.allDailies().map(row).join('') + addForm() + quotesSection();
+  list.innerHTML = '<li class="editor-section"><h3>Your dailies</h3></li>'
+    + store.allDailies().map(row).join('') + addForm() + quotesSection();
   list.scrollTop = scroll;
 }
 

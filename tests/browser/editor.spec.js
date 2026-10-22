@@ -28,6 +28,15 @@ test('switching dailies on and off changes the cards, and one always stays on', 
   await context.close();
 });
 
+test('the dialog has a general title and three sections that read alike', async () => {
+  const { page, context } = await open('iphone');
+  await openEdit(page);
+  assert.equal(await page.textContent('#editor-title'), 'Make it yours');
+  assert.deepEqual(await page.$$eval('#editor-list h3', (hs) => hs.map((h) => h.textContent)),
+    ['Your dailies', 'Add your own', 'Quote of the day']);
+  await context.close();
+});
+
 test('adding your own daily with an icon, and removing it again', async () => {
   const { page, context } = await open('android');
   await openEdit(page);
