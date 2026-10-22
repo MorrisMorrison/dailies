@@ -3,7 +3,7 @@
 // The dialog frame lives in index.html; this module renders the list inside it.
 import { $, esc } from './html.js';
 import { ICONS, DEFAULT_ICON, icon } from './icons.js';
-import { MAX_CUSTOM, MAX_LABEL, cleanLabel } from './dailies.js';
+import { MAX_CUSTOM, MAX_LABEL, MAX_NOTE, cleanLabel } from './dailies.js';
 import { COLLECTIONS } from './quotes.js';
 import * as store from './store.js';
 
@@ -13,9 +13,24 @@ let pickedIcon = DEFAULT_ICON;
 
 const REMOVE_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
+// The daily whose note is being written, if any.
+let editingNote = null;
+
+// Under a daily of one's own: its note, or "Add a note". Tapping it turns it into a field. Both sit
+// inside the row's label, which is fine: tapping a button or field there doesn't tick the checkbox.
+function note(daily) {
+  if (daily.id === editingNote) {
+    return `<input class="editor-note-input" id="editor-note" type="text" maxlength="${MAX_NOTE}" value="${esc(daily.hint)}"
+      placeholder="e.g. Five minutes is enough" aria-label="Note for ${esc(daily.label)}" autocomplete="off">`;
+  }
+  return daily.hint
+    ? `<button type="button" class="editor-note" data-note="${daily.id}" aria-label="Edit the note for ${esc(daily.label)}">${esc(daily.hint)}</button>`
+    : `<button type="button" class="editor-note is-empty" data-note="${daily.id}" aria-label="Add a note to ${esc(daily.label)}">Add a note</button>`;
+}
+
 function row(daily) {
   const checked = store.isEnabled(daily.id) ? ' checked' : '';
-  const hint = daily.hint ? `<small>${esc(daily.hint)}</small>` : '';
+  const hint = daily.custom ? note(daily) : `<small>${esc(daily.hint)}</small>`;
   const remove = daily.custom
     ? `<button type="button" class="editor-remove" data-remove="${daily.id}" aria-label="Remove ${esc(daily.label)}">${REMOVE_ICON}</button>`
     : '';
@@ -105,6 +120,30 @@ function add() {
   confirmAdded(id, label);
 }
 
+function editNote(id) {
+  editingNote = id;
+  render();
+  const input = $('editor-note');
+  input.focus({ preventScroll: true });
+  input.setSelectionRange(input.value.length, input.value.length);
+}
+
+// Saves the note (or, with save false, drops the change). Enter and Escape hand focus back to the
+// note; leaving the field any other way keeps focus where it went.
+function finishNote({ save = true, refocus = false } = {}) {
+  const input = $('editor-note');
+  const id = editingNote;
+  if (!input || !id) return;
+  editingNote = null; // first: removing the field fires focusout again
+  if (save) store.setNote(id, input.value);
+  render();
+  if (refocus) list.querySelector(`[data-note="${id}"]`)?.focus({ preventScroll: true });
+}
+
+list.addEventListener('focusout', (event) => {
+  if (event.target.id === 'editor-note') finishNote();
+});
+
 list.addEventListener('change', (event) => {
   const input = event.target;
   if (input.name === 'editor-icon') {
@@ -136,10 +175,17 @@ list.addEventListener('keydown', (event) => {
     event.preventDefault();
     add();
   }
+  // Enter saves the note; Escape drops the change instead of closing the dialog.
+  if ((event.key === 'Enter' || event.key === 'Escape') && event.target.id === 'editor-note') {
+    event.preventDefault();
+    finishNote({ save: event.key === 'Enter', refocus: true });
+  }
 });
 
 list.addEventListener('click', (event) => {
   if (event.target.closest('[data-add]')) return add();
+  const noteButton = event.target.closest('[data-note]');
+  if (noteButton) return editNote(noteButton.dataset.note);
   const remove = event.target.closest('[data-remove]');
   if (remove) {
     store.removeCustom(remove.dataset.remove);

@@ -168,6 +168,9 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
 .card .icon g { stroke-width: 2.4; }
 .card strong { font-size: 17px; font-weight: 700; letter-spacing: -.01em; padding-right: 28px; overflow-wrap: anywhere; }
 .card small { font-size: 13px; line-height: 1.35; margin-top: -6px; opacity: .82; }
+/* Without a description (a daily of one's own with no note), the name sits in the middle of the
+   space below the icon instead of leaving a gap under it (#46). */
+.card:not(:has(small)) strong { margin-block: auto; }
 .check {
   position: absolute; top: 14px; right: 14px; width: 24px; height: 24px; border-radius: 50%;
   border: 1.5px solid currentColor; opacity: .45; display: grid; place-items: center;
