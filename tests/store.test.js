@@ -9,7 +9,7 @@ globalThis.localStorage = {
   setItem: (key, value) => saved.set(key, value),
 };
 const store = await import('../site/js/store.js');
-const { DEFAULT_ENABLED, MAX_CUSTOM, MAX_LABEL } = await import('../site/js/dailies.js');
+const { DEFAULT_ENABLED, MAX_CUSTOM, MAX_LABEL, MAX_NOTE } = await import('../site/js/dailies.js');
 
 const KEY = 'dailies:v1';
 const stored = () => JSON.parse(saved.get(KEY));
@@ -44,6 +44,34 @@ test('rejects empty names, caps length, falls back to the default icon', () => {
   const daily = store.allDailies().find((d) => d.id === id);
   assert.equal(daily.label.length, MAX_LABEL);
   assert.equal(daily.icon, 'star');
+});
+
+test('a custom daily can get an optional note, shown as its description, and lose it again', () => {
+  const id = store.addCustom('Stretch', 'leaf');
+  const other = store.addCustom('Journal', 'create');
+  const daily = () => store.allDailies().find((d) => d.id === id);
+  assert.equal(daily().hint, '');
+  assert.equal('note' in stored().custom[0], false, 'no empty note stored');
+
+  store.setNote(id, '  Five   minutes after waking up  ' + 'x'.repeat(40));
+  assert.equal(daily().hint.length, MAX_NOTE);
+  assert.ok(daily().hint.startsWith('Five minutes after waking up x'));
+  assert.equal(stored().custom[0].note, daily().hint);
+  assert.equal(store.allDailies().find((d) => d.id === other).hint, '', 'other dailies unchanged');
+
+  store.setNote(id, '   ');
+  assert.equal(daily().hint, '');
+  assert.equal('note' in stored().custom[0], false);
+});
+
+test('a stored note is cleaned on load, and anything but text is dropped', () => {
+  useStored({ custom: [
+    { id: 'c-abcd1', label: 'Stretch', icon: 'leaf', note: '  Before   bed ' },
+    { id: 'c-abcd2', label: 'Journal', icon: 'leaf', note: 42 },
+  ] });
+  const [stretch, journal] = store.allDailies().filter((d) => d.custom);
+  assert.equal(stretch.hint, 'Before bed');
+  assert.equal(journal.hint, '');
 });
 
 test(`allows at most ${MAX_CUSTOM} custom dailies`, () => {

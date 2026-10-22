@@ -54,6 +54,39 @@ test('adding your own daily with an icon, and removing it again', async () => {
   await context.close();
 });
 
+test('a note on your own daily: added inline, shown on its card, Escape keeps the old one, cleared again', async () => {
+  const custom = [{ id: 'c-stretch1', label: 'Stretch', icon: 'leaf' }];
+  const { page, context, errors } = await open('iphone', { custom, enabled: [...DEFAULTS, 'c-stretch1'] });
+  const card = '.card[data-id="c-stretch1"]';
+  const note = '.editor-row[data-id="c-stretch1"] .editor-note';
+  assert.equal(await page.$(`${card} small`), null, 'no description yet');
+
+  await openEdit(page);
+  assert.equal(await page.textContent(note), 'Add a note');
+  await page.click(note);
+  assert.equal(await page.$eval('.editor-row[data-id="c-stretch1"] input[type="checkbox"]', (b) => b.checked), true, 'tapping the note leaves the tick alone');
+  await page.fill('#editor-note', 'Five minutes after waking up');
+  await page.press('#editor-note', 'Enter');
+  assert.equal(await page.textContent(note), 'Five minutes after waking up');
+  assert.ok(await page.$('#editor[open]'), 'Enter keeps the dialog open');
+
+  await page.click(note);
+  await page.fill('#editor-note', 'Something else');
+  await page.press('#editor-note', 'Escape');
+  assert.equal(await page.textContent(note), 'Five minutes after waking up', 'Escape drops the change');
+  assert.ok(await page.$('#editor[open]'), 'Escape keeps the dialog open');
+  await done(page);
+  assert.equal(await page.textContent(`${card} small`), 'Five minutes after waking up');
+
+  await openEdit(page);
+  await page.click(note);
+  await page.fill('#editor-note', '');
+  await done(page); // leaving the field saves it
+  assert.equal(await page.$(`${card} small`), null, 'an empty note removes it');
+  assert.deepEqual(errors, []);
+  await context.close();
+});
+
 test('Reset to defaults brings back the six', async () => {
   const { page, context } = await open('iphone', { enabled: ['breathe', 'play'] });
   await openEdit(page);

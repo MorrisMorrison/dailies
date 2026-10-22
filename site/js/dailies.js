@@ -19,9 +19,14 @@ export const BUILTIN = [
 
 export const DEFAULT_ENABLED = BUILTIN.filter((d) => d.core).map((d) => d.id);
 
-/** How many dailies of their own someone can add, and how long a name may be. */
+/** How many dailies of their own someone can add, and how long a name and its optional note may be.
+ * A note is about as long as the built-in descriptions, so it fits a card in two lines. */
 export const MAX_CUSTOM = 10;
 export const MAX_LABEL = 32;
+export const MAX_NOTE = 48;
 
+const clean = (value, max) => String(value ?? '').replace(/\s+/g, ' ').trim().slice(0, max);
 /** Collapses whitespace and trims a name to MAX_LABEL characters. */
-export const cleanLabel = (value) => String(value ?? '').replace(/\s+/g, ' ').trim().slice(0, MAX_LABEL);
+export const cleanLabel = (value) => clean(value, MAX_LABEL);
+/** The same for a note, trimmed to MAX_NOTE characters. */
+export const cleanNote = (value) => clean(value, MAX_NOTE);
