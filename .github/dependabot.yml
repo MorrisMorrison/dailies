@@ -1,0 +1,29 @@
+# Dependabot version updates. The site itself has no runtime dependencies;
+# npm here is only the test tooling (Playwright, coverage). Minor/patch bumps
+# are grouped into one PR per ecosystem; majors come as their own PRs.
+version: 2
+updates:
+  # Test tooling (package.json at the repo root)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      npm:
+        update-types: ["minor", "patch"]
+
+  # GitHub Actions used by .github/workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      actions:
+        patterns: ["*"]
