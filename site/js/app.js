@@ -8,7 +8,7 @@ import { QUOTES, quoteFor } from './quotes.js';
 import { skyFor } from './constellations.js';
 import { COLOURS, seasonalSky, hemisphereOf } from './sky.js';
 import { openEditor } from './editor.js';
-import { setupSharing } from './share.js';
+import { setupSharing, paintInstall } from './share.js';
 import { celebrate, clearSky } from './celebrate.js';
 import * as store from './store.js';
 
@@ -164,6 +164,7 @@ store.subscribe(() => {
     renderCards();
   }
   paint();
+  paintInstall(store.finishedToday()); // the home-screen card comes with a finished day
 });
 
 renderCards();
@@ -171,7 +172,7 @@ paint();
 paintClock();
 setInterval(paintClock, 60 * 1000);
 store.watch();
-setupSharing(store.earlierFinishedDays);
+setupSharing(store.finishedToday);
 
 // Offline support. Service workers only run over http(s), not from a file opened on disk.
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

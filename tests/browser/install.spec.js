@@ -1,7 +1,7 @@
 // The home-screen button and its sheet, per kind of browser, and the reminder card.
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { open, closeAll, UA } from './harness.js';
+import { open, closeAll, UA, DEFAULTS, tickNext } from './harness.js';
 
 after(closeAll);
 
@@ -36,6 +36,25 @@ test('in-app browser (Instagram): the sheet says to open Safari or Chrome, with 
   await context.close();
 });
 
+test('in-app browsers get a line at the top with a way out to the real browser, and no card', async () => {
+  const PINTEREST_IOS = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Pinterest/iOS';
+  const ios = await open('iphone', { ua: PINTEREST_IOS, dismissed: false, done: DEFAULTS.slice(0, 5) });
+  await tickNext(ios.page); // a finished day would bring the card elsewhere
+  assert.equal(await ios.page.$eval('#inapp', (s) => s.hidden), false);
+  assert.match(await ios.page.textContent('#inapp-text'), /Pinterest’s browser.*Safari/);
+  assert.deepEqual(await ios.page.$eval('#inapp-open', (a) => [a.textContent, a.getAttribute('href')]), ['Open in Safari', 'x-safari-https://dailies.local/']);
+  assert.equal(await ios.page.$eval('#install', (c) => c.hidden), true, 'the line takes over from the card');
+  await ios.context.close();
+
+  const android = await open('android', { ua: 'Mozilla/5.0 (Linux; Android 15; Pixel 8 Build/AP3A; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/155.0.0.0 Mobile Safari/537.36 [Pinterest/Android]' });
+  assert.equal(await android.page.$eval('#inapp-open', (a) => a.getAttribute('href')), 'intent://dailies.local/#Intent;scheme=https;end');
+  await android.context.close();
+
+  const safari = await open('iphone');
+  assert.equal(await safari.page.$eval('#inapp', (s) => s.hidden), true, 'not in Safari itself');
+  await safari.context.close();
+});
+
 test('android without an install prompt: the sheet points to the browser menu', async () => {
   const { page, context } = await open('android');
   const s = await sheet(page);
@@ -67,13 +86,17 @@ test('no button on desktop, or when Dailies already runs from the home screen', 
   await installed.context.close();
 });
 
-test('the reminder card shows after an earlier finished day, and "No thanks" keeps it away', async () => {
-  const first = await open('iphone', { dismissed: false, history: [] });
-  assert.equal(await first.page.$eval('#install', (c) => c.hidden), true, 'not on a first visit');
-  await first.context.close();
-
-  const { page, context } = await open('iphone', { dismissed: false, history: ['2026-06-08'] });
-  assert.equal(await page.$eval('#install', (c) => c.hidden), false);
+test('the home-screen card comes with the first finished day, under the quote, and "No thanks" keeps it away', async () => {
+  const { page, context } = await open('iphone', { dismissed: false, done: DEFAULTS.slice(0, 5) });
+  assert.equal(await page.$eval('#install', (c) => c.hidden), true, 'not before the day is finished');
+  await tickNext(page);
+  await page.waitForFunction(() => !document.getElementById('install').hidden);
+  assert.equal(await page.$eval('#install', (c) => c.previousElementSibling.id), 'quote', 'right under the quote');
+  assert.match(await page.textContent('#install-text'), /Add to Home Screen/);
+  assert.doesNotMatch(await page.textContent('#install-text'), /like an app/);
+  await page.click('.card[data-id="move"]'); // unticking: the day isn't finished any more
+  assert.equal(await page.$eval('#install', (c) => c.hidden), true, 'gone with the finished day');
+  await page.click('.card[data-id="move"]');
   await page.click('#install-dismiss');
   assert.equal(await page.$eval('#install', (c) => c.hidden), true);
   await page.reload(); await page.waitForSelector('.card');

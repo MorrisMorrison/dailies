@@ -2,7 +2,8 @@
 // screen from the first visit: it opens the browser's install prompt where there is one (Android),
 // or a short sheet with the steps, in the words of the browser: the Share menu on iPhone and iPad, and
 // "open it in your browser" inside apps like Instagram, which can't add anything to the home screen.
-// Once someone comes back after a finished day, a card reminds them too. Plus a Share button in the footer.
+// Inside such apps, a line at the top offers to open Dailies in Safari or the browser (#52). Once a
+// day is finished, a card under the quote suggests the home screen too. Plus a Share button in the footer.
 import { $ } from './html.js';
 
 const DISMISSED = 'dailies:install-dismissed';
@@ -21,12 +22,33 @@ export function platformOf(userAgent = '', touchPoints = 0) {
 }
 
 /**
- * Whether to show the home-screen card: on phones and tablets only, not when Dailies already runs from
- * the home screen, not once dismissed, and only to someone who finished a day before today (so never on
- * a first visit).
+ * Whether to show the home-screen card: once today's dailies are all done (the moment people like
+ * Dailies most, the first day included), on phones and tablets in their own browser, not when Dailies
+ * already runs from the home screen, and not once dismissed. In-app browsers get the line at the top instead.
  */
-export function shouldOffer({ platform, standalone, dismissed, earlierFinishedDays }) {
-  return platform !== 'desktop' && !standalone && !dismissed && earlierFinishedDays > 0;
+export function shouldOffer({ platform, standalone, dismissed, finishedToday }) {
+  return (platform === 'ios' || platform === 'android') && !standalone && !dismissed && finishedToday;
+}
+
+/** The app whose built-in browser this is, for the line at the top; null outside one. */
+export function inAppName(userAgent = '') {
+  const apps = [[/Pinterest/, 'Pinterest'], [/Instagram/, 'Instagram'], [/FBAN|FBAV|FB_IAB/, 'Facebook'],
+    [/WhatsApp/, 'WhatsApp'], [/Snapchat/, 'Snapchat'], [/musical_ly|BytedanceWebview/, 'TikTok'],
+    [/LinkedInApp/, 'LinkedIn'], [/Line\//, 'LINE']];
+  if (!IN_APP.test(userAgent)) return null;
+  return apps.find(([pattern]) => pattern.test(userAgent))?.[1] ?? 'this app';
+}
+
+/**
+ * A link that leaves the app's browser for the real one: Safari's own URL scheme on iPhone and iPad
+ * (iOS 17 and later), an intent that hands the address to the default browser on Android. Some apps
+ * block both, so Copy link stays next to it.
+ */
+export function openOutside(userAgent, url) {
+  const { host, pathname } = new URL(url);
+  if (/iPhone|iPad|iPod/.test(userAgent)) return { href: `x-safari-https://${host}${pathname}`, label: 'Open in Safari' };
+  if (/Android/.test(userAgent)) return { href: `intent://${host}${pathname}#Intent;scheme=https;end`, label: 'Open in browser' };
+  return null;
 }
 
 /** Whether to show the header's home-screen button: on phones and tablets, until Dailies runs from the home screen. */
@@ -57,10 +79,15 @@ export function sheetSteps(platform) {
 
 /** The card's text for a platform; `canPrompt` when the browser handed us its install prompt. */
 export function installText(platform, canPrompt) {
-  if (platform === 'inapp') return 'You are in an app’s built-in browser. Open this page in Safari or Chrome to add it to your home screen.';
-  if (platform === 'ios') return `Tap Share ${SHARE_ICON}, then <b>Add to Home Screen</b>. Dailies opens like an app, full screen, every morning.`;
-  if (canPrompt) return 'Install Dailies and it opens like an app, full screen, straight from your home screen.';
-  return 'Open your browser’s menu and choose <b>Add to Home screen</b> or <b>Install app</b>. Dailies then opens like an app.';
+  if (platform === 'ios') return `Tap Share ${SHARE_ICON}, then <b>Add to Home Screen</b>. Dailies then opens from its own icon, full screen, every morning.`;
+  if (canPrompt) return 'Install Dailies and it opens from its own icon, full screen, and works offline.';
+  return 'Open your browser’s menu and choose <b>Add to Home screen</b> or <b>Install app</b>. Dailies then opens from its own icon, full screen.';
+}
+
+/** The line at the top inside an app's browser. */
+export function inAppText(app, android = false) {
+  const browser = android ? 'your browser' : 'Safari';
+  return `You’re in ${app === 'this app' ? 'an app’s' : `${app}’s`} browser. Open Dailies in ${browser} to keep it on your home screen.`;
 }
 
 // ---- The home-screen card.
@@ -79,11 +106,11 @@ function dismiss() {
 let installPrompt = null;
 const platform = () => platformOf(navigator.userAgent, navigator.maxTouchPoints);
 
-/** Shows or hides the header button and the card. `earlierFinishedDays` counts finished days other than today. */
-export function paintInstall(earlierFinishedDays) {
+/** Shows or hides the header button and the card; the card once `finishedToday`. */
+export function paintInstall(finishedToday) {
   const standalone = isStandalone();
   $('install-open').hidden = !offersButton({ platform: platform(), standalone });
-  const show = shouldOffer({ platform: platform(), standalone, dismissed: isDismissed(), earlierFinishedDays });
+  const show = shouldOffer({ platform: platform(), standalone, dismissed: isDismissed(), finishedToday });
   $('install').hidden = !show;
   if (!show) return;
   $('install-text').innerHTML = installText(platform(), Boolean(installPrompt));
@@ -108,12 +135,23 @@ async function copyLink(button, label) {
   setTimeout(() => { button.textContent = label; }, 2500);
 }
 
-export function setupSharing(earlierFinishedDays) {
+// The line at the top inside an app's browser: which app, and a way out to the real browser.
+function paintInApp() {
+  const app = inAppName(navigator.userAgent);
+  $('inapp').hidden = !app;
+  if (!app) return;
+  const way = openOutside(navigator.userAgent, new URL('./', location.href).href);
+  $('inapp-text').textContent = inAppText(app, /Android/.test(navigator.userAgent));
+  $('inapp-open').hidden = !way;
+  if (way) Object.assign($('inapp-open'), { href: way.href, textContent: way.label });
+}
+
+export function setupSharing(finishedToday) {
   // Chrome and Edge on Android hand over their install prompt; keep it for the Install buttons.
   addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
     installPrompt = event;
-    paintInstall(earlierFinishedDays());
+    paintInstall(finishedToday());
   });
   addEventListener('appinstalled', () => { $('install').hidden = true; $('install-open').hidden = true; });
 
@@ -124,12 +162,13 @@ export function setupSharing(earlierFinishedDays) {
     const { outcome } = await installPrompt.userChoice;
     installPrompt = null; // a prompt can only be used once
     if (outcome === 'accepted') { $('install').hidden = true; $('install-open').hidden = true; }
-    else paintInstall(earlierFinishedDays());
+    else paintInstall(finishedToday());
   }
   $('install-open').addEventListener('click', install);
   $('install-go').addEventListener('click', install);
   $('install-dismiss').addEventListener('click', dismiss);
   $('install-copy').addEventListener('click', (event) => copyLink(event.currentTarget, 'Copy link'));
+  $('inapp-copy').addEventListener('click', (event) => copyLink(event.currentTarget, 'Copy link'));
 
   // The footer's Share button: the phone's share sheet, or copy the link where there is none.
   const share = $('share');
@@ -142,5 +181,6 @@ export function setupSharing(earlierFinishedDays) {
     copyLink(share, 'Share Dailies');
   });
 
-  paintInstall(earlierFinishedDays());
+  paintInApp();
+  paintInstall(finishedToday());
 }

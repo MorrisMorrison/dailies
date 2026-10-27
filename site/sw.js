@@ -2,7 +2,7 @@
 // answers when there is no connection. Lives at the site root so it can serve every page and file.
 //
 // CACHE and ASSETS are written by `npm run release` (scripts/release.js); tests/site.test.js checks them.
-const CACHE = 'dailies-v16';
+const CACHE = 'dailies-v17';
 const ASSETS = [
   './',
   './index.html',

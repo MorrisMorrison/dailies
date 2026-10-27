@@ -30,34 +30,43 @@
      page never mixes files from two releases out of a cache. This page itself is never cached, so it
      always names the current version. The import map does the same for the modules' own imports.
      `npm run release` updates them all, with CACHE; tests/site.test.js checks they agree. -->
-<link rel="stylesheet" href="css/style.css?v=16">
-<link rel="stylesheet" href="css/editor.css?v=16">
+<link rel="stylesheet" href="css/style.css?v=17">
+<link rel="stylesheet" href="css/editor.css?v=17">
 <script type="importmap">
 {
   "imports": {
-    "./js/app.js": "./js/app.js?v=16",
-    "./js/celebrate.js": "./js/celebrate.js?v=16",
-    "./js/colour.js": "./js/colour.js?v=16",
-    "./js/constellations.js": "./js/constellations.js?v=16",
-    "./js/dailies.js": "./js/dailies.js?v=16",
-    "./js/editor.js": "./js/editor.js?v=16",
-    "./js/greeting.js": "./js/greeting.js?v=16",
-    "./js/html.js": "./js/html.js?v=16",
-    "./js/icons.js": "./js/icons.js?v=16",
-    "./js/quotes.js": "./js/quotes.js?v=16",
-    "./js/share.js": "./js/share.js?v=16",
-    "./js/sky.js": "./js/sky.js?v=16",
-    "./js/store.js": "./js/store.js?v=16"
+    "./js/app.js": "./js/app.js?v=17",
+    "./js/celebrate.js": "./js/celebrate.js?v=17",
+    "./js/colour.js": "./js/colour.js?v=17",
+    "./js/constellations.js": "./js/constellations.js?v=17",
+    "./js/dailies.js": "./js/dailies.js?v=17",
+    "./js/editor.js": "./js/editor.js?v=17",
+    "./js/greeting.js": "./js/greeting.js?v=17",
+    "./js/html.js": "./js/html.js?v=17",
+    "./js/icons.js": "./js/icons.js?v=17",
+    "./js/quotes.js": "./js/quotes.js?v=17",
+    "./js/share.js": "./js/share.js?v=17",
+    "./js/sky.js": "./js/sky.js?v=17",
+    "./js/store.js": "./js/store.js?v=17"
   }
 }
 </script>
-<script type="module" src="js/app.js?v=16"></script>
+<script type="module" src="js/app.js?v=17"></script>
 </head>
 <body>
 <div class="starfield" aria-hidden="true"></div>
 <div class="meteors" id="meteors" aria-hidden="true"></div>
 <div class="page">
 <main>
+  <!-- Inside apps like Pinterest or Instagram: a way out to the real browser; see js/share.js. -->
+  <section class="inapp" id="inapp" hidden aria-label="Open in your browser">
+    <p id="inapp-text"></p>
+    <div class="install-actions">
+      <a class="install-go" id="inapp-open" href="./">Open in Safari</a>
+      <button type="button" id="inapp-copy">Copy link</button>
+    </div>
+  </section>
+
   <header class="top">
     <span id="date"></span>
     <span class="top-actions">
@@ -89,15 +98,7 @@
     <figcaption id="quote-by"></figcaption>
   </figure>
 
-  <ul class="cards" id="cards"></ul>
-
-  <section class="your-sky" aria-labelledby="your-sky-title">
-    <div class="your-sky-head"><h2 id="your-sky-title">Your sky</h2><span id="your-sky-count"></span></div>
-    <svg id="constellation" viewBox="0 0 300 120" role="img"></svg>
-    <p class="your-sky-note" id="your-sky-note"></p>
-  </section>
-
-  <!-- Shown on phones to people who came back after a finished day; see js/share.js. -->
+  <!-- Shown on phones once the day is finished, right under the quote; see js/share.js. -->
   <section class="install" id="install" hidden aria-labelledby="install-title">
     <h2 id="install-title">Keep Dailies on your home screen</h2>
     <p id="install-text"></p>
@@ -105,6 +106,14 @@
       <button type="button" class="install-go" id="install-go" hidden>Install</button>
       <button type="button" class="install-dismiss" id="install-dismiss">No thanks</button>
     </div>
+  </section>
+
+  <ul class="cards" id="cards"></ul>
+
+  <section class="your-sky" aria-labelledby="your-sky-title">
+    <div class="your-sky-head"><h2 id="your-sky-title">Your sky</h2><span id="your-sky-count"></span></div>
+    <svg id="constellation" viewBox="0 0 300 120" role="img"></svg>
+    <p class="your-sky-note" id="your-sky-note"></p>
   </section>
 
   <p class="note">Fresh every morning. Nothing leaves this device.<br><button type="button" class="share" id="share">Share Dailies</button> · <a href="https://github.com/MorrisMorrison/dailies">Source on GitHub</a></p>
