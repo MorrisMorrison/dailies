@@ -198,12 +198,12 @@ h1 { margin: 22px 0 0; font-size: clamp(32px, 9vw, 42px); font-weight: 800; lett
 
 /* ---- Keep it on the home screen (phones only, see js/share.js) */
 
-.install { margin: 18px 0 0; padding: 16px 18px; border-radius: 22px; border: 1px solid var(--frost-edge); background: var(--frost); color: var(--deep); }
+.install { margin: 0 0 14px; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--frost-edge); background: var(--frost); color: var(--deep); }
 .install h2 { margin: 0; font-size: 15px; font-weight: 700; }
 .install p { margin: 6px 0 0; font-size: 14px; line-height: 1.5; }
 .share-icon { display: inline-block; width: 1.05em; height: 1.05em; vertical-align: -.15em; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .install-actions { display: flex; gap: 8px; margin-top: 12px; }
-/* Inside an app's browser: a quiet line at the very top with the way out (#52). */
+/* The top of the page: the in-app line with the way out, or the home-screen card (#52). */
 .inapp { margin: 0 0 14px; padding: 12px 14px; border-radius: 18px; border: 1px solid var(--frost-edge); background: var(--frost); color: var(--deep); }
 .inapp p { margin: 0; font-size: 14px; line-height: 1.45; }
 .inapp .install-actions { margin-top: 10px; }

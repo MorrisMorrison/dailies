@@ -3,7 +3,7 @@
 // or a short sheet with the steps, in the words of the browser: the Share menu on iPhone and iPad, and
 // "open it in your browser" inside apps like Instagram, which can't add anything to the home screen.
 // Inside such apps, a line at the top offers to open Dailies in Safari or the browser (#52). Once a
-// day is finished, a card under the quote suggests the home screen too. Plus a Share button in the footer.
+// day is finished, a card in the same place suggests the home screen. Plus a Share button in the footer.
 import { $ } from './html.js';
 
 const DISMISSED = 'dailies:install-dismissed';
@@ -79,9 +79,9 @@ export function sheetSteps(platform) {
 
 /** The card's text for a platform; `canPrompt` when the browser handed us its install prompt. */
 export function installText(platform, canPrompt) {
-  if (platform === 'ios') return `Tap Share ${SHARE_ICON}, then <b>Add to Home Screen</b>. Dailies then opens from its own icon, full screen, every morning.`;
+  if (platform === 'ios') return `Tap Share ${SHARE_ICON}, then <b>Add to Home Screen</b>. Dailies then opens from its own icon, full screen, and works offline.`;
   if (canPrompt) return 'Install Dailies and it opens from its own icon, full screen, and works offline.';
-  return 'Open your browser’s menu and choose <b>Add to Home screen</b> or <b>Install app</b>. Dailies then opens from its own icon, full screen.';
+  return 'Open your browser’s menu and choose <b>Add to Home screen</b> or <b>Install app</b>. Dailies then opens from its own icon, full screen, and works offline.';
 }
 
 /** The line at the top inside an app's browser. */

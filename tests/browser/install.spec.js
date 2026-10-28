@@ -86,12 +86,12 @@ test('no button on desktop, or when Dailies already runs from the home screen', 
   await installed.context.close();
 });
 
-test('the home-screen card comes with the first finished day, under the quote, and "No thanks" keeps it away', async () => {
+test('the home-screen card comes with the first finished day, at the top, and "No thanks" keeps it away', async () => {
   const { page, context } = await open('iphone', { dismissed: false, done: DEFAULTS.slice(0, 5) });
   assert.equal(await page.$eval('#install', (c) => c.hidden), true, 'not before the day is finished');
   await tickNext(page);
   await page.waitForFunction(() => !document.getElementById('install').hidden);
-  assert.equal(await page.$eval('#install', (c) => c.previousElementSibling.id), 'quote', 'right under the quote');
+  assert.equal(await page.$eval('#install', (c) => c.nextElementSibling.matches('header.top')), true, 'at the top, where the in-app line goes');
   assert.match(await page.textContent('#install-text'), /Add to Home Screen/);
   assert.doesNotMatch(await page.textContent('#install-text'), /like an app/);
   await page.click('.card[data-id="move"]'); // unticking: the day isn't finished any more

@@ -30,40 +30,49 @@
      page never mixes files from two releases out of a cache. This page itself is never cached, so it
      always names the current version. The import map does the same for the modules' own imports.
      `npm run release` updates them all, with CACHE; tests/site.test.js checks they agree. -->
-<link rel="stylesheet" href="css/style.css?v=17">
-<link rel="stylesheet" href="css/editor.css?v=17">
+<link rel="stylesheet" href="css/style.css?v=18">
+<link rel="stylesheet" href="css/editor.css?v=18">
 <script type="importmap">
 {
   "imports": {
-    "./js/app.js": "./js/app.js?v=17",
-    "./js/celebrate.js": "./js/celebrate.js?v=17",
-    "./js/colour.js": "./js/colour.js?v=17",
-    "./js/constellations.js": "./js/constellations.js?v=17",
-    "./js/dailies.js": "./js/dailies.js?v=17",
-    "./js/editor.js": "./js/editor.js?v=17",
-    "./js/greeting.js": "./js/greeting.js?v=17",
-    "./js/html.js": "./js/html.js?v=17",
-    "./js/icons.js": "./js/icons.js?v=17",
-    "./js/quotes.js": "./js/quotes.js?v=17",
-    "./js/share.js": "./js/share.js?v=17",
-    "./js/sky.js": "./js/sky.js?v=17",
-    "./js/store.js": "./js/store.js?v=17"
+    "./js/app.js": "./js/app.js?v=18",
+    "./js/celebrate.js": "./js/celebrate.js?v=18",
+    "./js/colour.js": "./js/colour.js?v=18",
+    "./js/constellations.js": "./js/constellations.js?v=18",
+    "./js/dailies.js": "./js/dailies.js?v=18",
+    "./js/editor.js": "./js/editor.js?v=18",
+    "./js/greeting.js": "./js/greeting.js?v=18",
+    "./js/html.js": "./js/html.js?v=18",
+    "./js/icons.js": "./js/icons.js?v=18",
+    "./js/quotes.js": "./js/quotes.js?v=18",
+    "./js/share.js": "./js/share.js?v=18",
+    "./js/sky.js": "./js/sky.js?v=18",
+    "./js/store.js": "./js/store.js?v=18"
   }
 }
 </script>
-<script type="module" src="js/app.js?v=17"></script>
+<script type="module" src="js/app.js?v=18"></script>
 </head>
 <body>
 <div class="starfield" aria-hidden="true"></div>
 <div class="meteors" id="meteors" aria-hidden="true"></div>
 <div class="page">
 <main>
-  <!-- Inside apps like Pinterest or Instagram: a way out to the real browser; see js/share.js. -->
+  <!-- The top of the page, for at most one of these two (see js/share.js): inside apps like Pinterest
+       or Instagram, a way out to the real browser; on phones, once the day is finished, the home screen. -->
   <section class="inapp" id="inapp" hidden aria-label="Open in your browser">
     <p id="inapp-text"></p>
     <div class="install-actions">
       <a class="install-go" id="inapp-open" href="./">Open in Safari</a>
       <button type="button" id="inapp-copy">Copy link</button>
+    </div>
+  </section>
+  <section class="install" id="install" hidden aria-labelledby="install-title">
+    <h2 id="install-title">Keep Dailies on your home screen</h2>
+    <p id="install-text"></p>
+    <div class="install-actions">
+      <button type="button" class="install-go" id="install-go" hidden>Install</button>
+      <button type="button" class="install-dismiss" id="install-dismiss">No thanks</button>
     </div>
   </section>
 
@@ -97,16 +106,6 @@
     <blockquote id="quote-text"></blockquote>
     <figcaption id="quote-by"></figcaption>
   </figure>
-
-  <!-- Shown on phones once the day is finished, right under the quote; see js/share.js. -->
-  <section class="install" id="install" hidden aria-labelledby="install-title">
-    <h2 id="install-title">Keep Dailies on your home screen</h2>
-    <p id="install-text"></p>
-    <div class="install-actions">
-      <button type="button" class="install-go" id="install-go" hidden>Install</button>
-      <button type="button" class="install-dismiss" id="install-dismiss">No thanks</button>
-    </div>
-  </section>
 
   <ul class="cards" id="cards"></ul>
 
