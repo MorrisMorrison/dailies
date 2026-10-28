@@ -1,7 +1,7 @@
 // Who gets the home-screen card, and what it says.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { platformOf, shouldOffer, offersButton, sheetSteps, installText } from '../site/js/share.js';
+import { platformOf, shouldOffer, offersButton, sheetSteps, installText, inAppName, openOutside, inAppText } from '../site/js/share.js';
 
 const UA = {
   iphone: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.5 Mobile/15E148 Safari/604.1',
@@ -25,22 +25,39 @@ test('tells phones, in-app browsers and desktops apart', () => {
   assert.equal(platformOf(), 'desktop');
 });
 
-test('offers the home screen only to returning phone users who have not installed or dismissed it', () => {
-  const base = { platform: 'ios', standalone: false, dismissed: false, earlierFinishedDays: 1 };
+test('offers the home screen once the day is finished, in a phone’s own browser, until installed or dismissed', () => {
+  const base = { platform: 'ios', standalone: false, dismissed: false, finishedToday: true };
   assert.equal(shouldOffer(base), true);
   assert.equal(shouldOffer({ ...base, platform: 'android' }), true);
-  assert.equal(shouldOffer({ ...base, platform: 'inapp' }), true);
+  assert.equal(shouldOffer({ ...base, platform: 'inapp' }), false, 'the line at the top takes over');
   assert.equal(shouldOffer({ ...base, platform: 'desktop' }), false);
   assert.equal(shouldOffer({ ...base, standalone: true }), false);
   assert.equal(shouldOffer({ ...base, dismissed: true }), false);
-  assert.equal(shouldOffer({ ...base, earlierFinishedDays: 0 }), false, 'not on a first visit');
+  assert.equal(shouldOffer({ ...base, finishedToday: false }), false, 'not before the day is finished');
 });
 
-test('explains the way in each browser offers', () => {
+test('explains the way in each browser offers, without calling Dailies an app', () => {
   assert.match(installText('ios', false), /Add to Home Screen/);
   assert.match(installText('android', true), /^Install Dailies/);
   assert.match(installText('android', false), /menu/);
-  assert.match(installText('inapp', false), /Safari or Chrome/);
+  for (const text of [installText('ios', false), installText('android', true), installText('android', false)]) {
+    assert.doesNotMatch(text, /like an app/);
+  }
+});
+
+test('inside an app’s browser: names the app and offers a way out to the real browser', () => {
+  assert.equal(inAppName(UA.instagram), 'Instagram');
+  assert.equal(inAppName(UA.facebook), 'Facebook');
+  assert.equal(inAppName('Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Pinterest/iOS'), 'Pinterest');
+  assert.equal(inAppName(UA.iphone), null);
+  assert.equal(inAppName(UA.android), null);
+
+  assert.deepEqual(openOutside(UA.instagram, 'https://dailies.health/'), { href: 'x-safari-https://dailies.health/', label: 'Open in Safari' });
+  assert.deepEqual(openOutside(UA.facebook, 'https://dailies.health/'), { href: 'intent://dailies.health/#Intent;scheme=https;end', label: 'Open in browser' });
+  assert.equal(openOutside(UA.windows, 'https://dailies.health/'), null);
+
+  assert.equal(inAppText('Pinterest'), 'You’re in Pinterest’s browser. Open Dailies in Safari to keep it on your home screen.');
+  assert.match(inAppText('this app', true), /^You’re in an app’s browser\. Open Dailies in your browser/);
 });
 
 test('shows the home-screen button on phones from the first visit, until Dailies runs from the home screen', () => {

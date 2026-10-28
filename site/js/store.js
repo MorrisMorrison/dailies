@@ -147,6 +147,8 @@ export const keptQuote = () => state.keptQuote;
 export const finishedDays = () => state.history.length;
 /** Finished days before today: proof someone came back, not just tried it once. */
 export const earlierFinishedDays = () => state.history.filter((day) => day !== state.day).length;
+/** Whether every daily is done today. */
+export const finishedToday = () => state.history.includes(state.day);
 
 /** How far today is: done and total of the switched-on dailies, and the share done (0..1). */
 export function progress() {
